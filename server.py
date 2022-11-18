@@ -4,8 +4,7 @@
 import dis
 import socket
 import sys
-from pprint import pprint
-
+from descriptor import NonNegative
 from my_socket import MySocket
 from select import select
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
@@ -15,50 +14,43 @@ import logging
 
 logger = logging.getLogger('server')
 users = []
+# Глобальная переменная, переходит в истину если используется socket.type SOCK_STREAM
+flag = False
 
 
 class ServerVerifier(type):
-    # Вызывается для создания экземпляра класса, перед вызовом __init__
+
     def __init__(cls, future_class_name, future_class_parents, future_class_attrs):
         """
-          Метод проверяет наличие атрибутов из списка required_attributes.
-          По умолчанию - ни один из обязательных атрибутов не найден
-          (изначально список not_found_attributes == required_attributes).
+          Метод проверяет наличие запрещенных методов .
         """
         super().__init__(type)
-        # pprint(cls.__dict__)
-        pprint(future_class_attrs)
-        required_attributes = ['sock', 'account_name']
-        not_found_attributes = required_attributes.copy()
-        for attr, v in future_class_attrs.items():
-            if attr in required_attributes:
-                not_found_attributes.remove(attr)
-
-        if not_found_attributes:
-            print(not_found_attributes)
-            # raise AttributeError(f"Not found attributes: {not_found_attributes}")
-
-        # super(ClientVerifier, cls).__init__(future_class_name,
-        #                                     future_class_parents,
-        #                                     future_class_attrs)
-        pprint(cls.__dict__)
+        global flag
         for func in cls.__dict__:
             try:
                 ret = dis.get_instructions(cls.__dict__[func])
             except TypeError:
-                print(func)
                 pass
             else:
                 for i in ret:
-                    pprint(i.argval)
-                    # print(i)
+                    if i.argval == 'connect':
+                        raise ValueError(f'Недопуcтимый метод {i.argval}')
+                    if i.argval == 'SOCK_STREAM':
+                        global flag
+                        flag = True
+                        print(f'Подключение по TCP: {flag}')
+
+        if not flag:
+            raise ValueError('Не допустимый тип сокета')
 
 
 class Server(metaclass=ServerVerifier):
-    def __init__(self, listen_address, listen_port):
+    port = NonNegative()
+
+    def __init__(self, listen_address, port):
         # Параметры подключения
         self.addr = listen_address
-        self.port = listen_port
+        self.port = port
         # Список подключенных клиентов
         self.clients = []
         self.clients_socket_names = []
@@ -120,9 +112,6 @@ class Server(metaclass=ServerVerifier):
         s.bind((self.addr, self.port))
         s.listen(MAX_CONNECTIONS)
         s.settimeout(2)
-        # clients = []
-        # clients_socket_names = []
-        # messages = []
         global users
         while True:
             try:
@@ -159,8 +148,6 @@ class Server(metaclass=ServerVerifier):
                             logger.info(f'Клиент {client_with_message.getpeername()} '
                                         f'отключился от сервера.')
                             client_with_message.close()
-                            # recv_data_lst.remove(client_with_message)
-                            # send_data_lst.remove(client_with_message)
                             self.clients.remove(client_with_message)
 
                 # Если есть сообщения, обрабатываем каждое.
@@ -222,7 +209,6 @@ def start():
         sys.exit(1)
 
     # Затем загружаем какой адрес слушать
-
     try:
         if '-a' in sys.argv:
             listen_address = sys.argv[sys.argv.index('-a') + 1]

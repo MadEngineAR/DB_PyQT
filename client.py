@@ -4,7 +4,6 @@ import json
 import socket
 import threading
 import time
-from pprint import pprint
 
 from common.variables import DEFAULT_IP_ADDRESS, DEFAULT_PORT
 from common.utils import get_message, send_message
@@ -16,43 +15,41 @@ logger = logging.getLogger('client')
 
 class ClientVerifier(type):
     # Вызывается для создания экземпляра класса, перед вызовом __init__
+    def __new__(mcs, name, bases, dict):
+        new_class = super(ClientVerifier, mcs).__new__(mcs, name, bases, dict)
+        # print(f'__new__({name}, {bases}, {dict}) -> {new_class}')
+        return new_class
+
     def __init__(cls, future_class_name, future_class_parents, future_class_attrs):
         """
-          Метод проверяет наличие атрибутов из списка required_attributes.
-          По умолчанию - ни один из обязательных атрибутов не найден
-          (изначально список not_found_attributes == required_attributes).
+          Метод проверяет наличие запрещенных методов .
         """
         super().__init__(type)
-        # pprint(cls.__dict__)
-        # pprint(future_class_attrs)
-        # required_attributes = ['sock', 'account_name']
-        # not_found_attributes = required_attributes.copy()
-        # for attr, v in future_class_attrs.items():
-        #     if attr in required_attributes:
-        #         not_found_attributes.remove(attr)
-
-        # if not_found_attributes:
-        #     print(not_found_attributes)
-            # raise AttributeError(f"Not found attributes: {not_found_attributes}")
-
-
-        # super(ClientVerifier, cls).__init__(future_class_name,
-        #                                     future_class_parents,
-        #                                     future_class_attrs)
-        # pprint(cls.__dict__)
         for func in cls.__dict__:
             try:
                 ret = dis.get_instructions(cls.__dict__[func])
             except TypeError:
-                # print(func)
                 pass
             else:
                 for i in ret:
                     if i.argval in ['accept', 'listen']:
                         raise ValueError(f'Недопуcтимый метод {i.argval}')
-                    pprint(i.argval)
+                    if i.argval == 'socket':
+                        raise ValueError(f'Недопуcтимо создание сокета внутри класса')
 
-                    # print(i.argval)
+    def __call__(cls, *args, **kwargs):
+        """
+            Проверка на тип сокета. При создании экземпляра класса ClientSender, СlientListener - маг.метод проверяет
+            переданный сокет, в качестве атрибута при создании.
+            __call__() вызывается при создании объектов класса;
+        """
+        obj = super(ClientVerifier, cls).__call__(*args, **kwargs)
+        sock = args[0]
+        if 'SOCK_STREAM' in str(sock.type):
+            pass
+        else:
+            raise ValueError('Не допустимый тип сокета')
+        return obj
 
 
 class ClientSender(threading.Thread, metaclass=ClientVerifier):
@@ -135,7 +132,7 @@ def make_presence(sock, account_name):
     return data
 
 
-class ClientListener(threading.Thread):
+class ClientListener(threading.Thread, metaclass=ClientVerifier):
     def __init__(self, sock, account_name):
         self.account_name = account_name
         self.sock = sock
@@ -190,6 +187,7 @@ def main_client():
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # print(s.family)
         s.connect((server_address, server_port))
         send_message(s, make_presence(s, account_name=None))
         answer = response_process(s)
@@ -213,13 +211,11 @@ def main_client():
         sys.exit(1)
     else:
 
-        # receiver = threading.Thread(target=message_from_server, args=(s,))
         receiver = ClientListener(s, answer['login'])
         receiver.daemon = True
         receiver.start()
 
         # затем запускаем отправку сообщений и взаимодействие с пользователем.
-        # user_interface = threading.Thread(target=user_interactive, args=(s, answer["login"]))
         user_interface = ClientSender(s, answer['login'])
         user_interface.user_interactive()
         user_interface.daemon = True
