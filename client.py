@@ -8,9 +8,11 @@ import time
 from common.variables import DEFAULT_IP_ADDRESS, DEFAULT_PORT
 from common.utils import get_message, send_message
 import logging
+from logs.client_log_config import log
 from errors import IncorrectDataRecivedError, ReqFieldMissingError, ServerError
 
-logger = logging.getLogger('client')
+# logger = logging.getLogger('client')
+logger = log
 
 
 class ClientVerifier(type):
@@ -64,8 +66,8 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
             'action': 'exit',
             'time': time.time(),
             'user': {
-                "account_name": self.account_name,
-                "status": "Yep, I am here!"
+                'account_name': self.account_name,
+                'sock': self.sock.getsockname()
             },
         }
 

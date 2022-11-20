@@ -10,9 +10,11 @@ from select import select
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
     PRESENCE, TIME, USER, ERROR, DEFAULT_PORT
 from common.utils import get_message, send_message
+from logs.server_log_config import log
 import logging
 
-logger = logging.getLogger('server')
+# logger = logging.getLogger('server')
+logger = log
 users = []
 # Глобальная переменная, переходит в истину если используется socket.type SOCK_STREAM
 flag = False
@@ -67,7 +69,6 @@ class Server(metaclass=ServerVerifier):
             logger.info(f'Соединение с клиентом: НОРМАЛЬНОЕ {msg}')
             if message[USER] not in users:
                 users.append(message[USER])
-            print(users)
             return {
                 RESPONSE: 200,
                 'data': None,
@@ -85,6 +86,8 @@ class Server(metaclass=ServerVerifier):
             }
         elif ACTION in message and message[ACTION] == 'exit' and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
+            users.remove(message[USER])
+            print(users)
             return {RESPONSE: 200,
                     'data': None,
                     'login': message['user']['account_name'],
@@ -121,7 +124,6 @@ class Server(metaclass=ServerVerifier):
             else:
                 self.clients.append(client)
                 self.clients_socket_names.append(client.getpeername())
-
                 print(self.clients_socket_names)
             finally:
                 recv_data_lst = []
@@ -139,11 +141,20 @@ class Server(metaclass=ServerVerifier):
                         try:
                             message_from_client = get_message(client_with_message)
                             if message_from_client['action'] == 'exit':
-                                client_with_message.close()
+                                # client_with_message.close()
                                 recv_data_lst.remove(client_with_message)
                                 send_data_lst.remove(client_with_message)
-                            self.messages.append(message_from_client)
-                            self.process_client_message(message_from_client)
+                                self.clients.remove(client_with_message)
+                                print(client_with_message.getpeername())
+                                self.clients_socket_names.remove(client_with_message.getpeername())
+                                print(message_from_client[USER])
+                                print(users)
+
+                                users.remove(message_from_client[USER])
+                                print(users)
+                            else:
+                                self.messages.append(message_from_client)
+                                self.process_client_message(message_from_client)
                         except Exception:
                             logger.info(f'Клиент {client_with_message.getpeername()} '
                                         f'отключился от сервера.')
@@ -173,20 +184,19 @@ class Server(metaclass=ServerVerifier):
                                 try:
                                     response = self.process_client_message(message)
                                     print(response)
-
                                     if len(response['sock_address']) == 0 \
                                             and s_listener.getpeername() == tuple(message['user']['sock']):
-                                        response[
-                                            'data'] = f'Вы отправили сообщение не существующему адресату {message["to"]}'
+                                        response['data'] = f'Вы отправили сообщение не существующему ' \
+                                                           f'адресату {message["to"]}'
                                         send_message(s_listener, response)
                                     elif s_listener.getpeername() == tuple(response['sock_address'][0]):
                                         send_message(s_listener, response)
-                                        print('1111')
                                 except BrokenPipeError:
                                     print('Вах')
                                     send_data_lst.remove(s_listener)
                                 except IndexError:
                                     pass
+
 
 
 def start():
