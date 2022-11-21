@@ -4,14 +4,12 @@ import logging.handlers
 # с именем app.main
 import os
 
-
 log = logging.getLogger('server')
 
 # Создать обработчик
 PATH = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(PATH, 'server.log')
-file_hand = logging.handlers.TimedRotatingFileHandler(PATH, encoding='utf8', when = 'midnight')
-
+file_hand = logging.handlers.TimedRotatingFileHandler(PATH, encoding='utf8', when='midnight')
 
 # выводит сообщения с уровнем DEBUG
 file_hand.setLevel(logging.DEBUG)
