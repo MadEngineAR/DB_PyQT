@@ -5,7 +5,7 @@ import stat
 import subprocess
 import sys
 import time
-from time import sleep
+
 
 PYTHON_PATH = sys.executable
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +13,7 @@ CLIENTS_COUNT = 2
 
 
 def get_subprocess(file_name, args=''):
-    # Задержка для того, что бы отправляющий процесс успел зарегистрироваться на сервере, и потом в словаре имен клиентов
+    # Задержка для  того, что бы отправляющий процесс успел зарегистрироваться на сервере, и потом в словаре имен клиентов
     # остался только слушающий клиент
     time.sleep(0.5)
     # file_full_path = f"{PYTHON_PATH} {BASE_PATH}/{file_with_args}"

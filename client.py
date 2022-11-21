@@ -92,7 +92,7 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
         return message_dict
 
     def user_interactive(self):
-        # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         """Функция взаимодействия с пользователем, запрашивает команды, отправляет сообщения"""
         print('Поддерживаемые команды:')
         print('message - отправить сообщение. Кому и текст будет запрошены отдельно.')
