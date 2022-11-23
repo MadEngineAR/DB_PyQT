@@ -21,12 +21,14 @@ import datetime
 
 class ServerStorage:
     class AllUsers:
-        def __init__(self, username, ip_address, port):
+        def __init__(self, username, ip_address, port, sender_count, recepient_count):
             self.username = username
             self.last_login = datetime.datetime.now()
             self.ip_address = ip_address
             self.port = port
             self.id = None
+            self.sender_count = sender_count
+            self.recepient_count = recepient_count
 
     class ClientHistory:
         def __init__(self, user_id, ip_address, port, login_time):
@@ -37,10 +39,15 @@ class ServerStorage:
             self.login_time = login_time
 
     class ClientContacts:
-        def __init__(self, user_id, contact_name, contact_time):
+        def __init__(self, user_id, contact_name, contact_time, message, send_count, recep_count):
             self.user_id = user_id
             self.contact_name = contact_name
             self.contact_time = contact_time
+            self.message = message
+            self.send_count = send_count
+            self.recep_count = recep_count
+
+
 
     def __init__(self):
         self.database_engine = create_engine('sqlite:///server_database_console.db', echo=False, pool_recycle=7200,
@@ -53,7 +60,9 @@ class ServerStorage:
                             Column('username', String, unique=True),
                             Column('ip_address', String),
                             Column('port', String),
-                            Column('last_login', DateTime)
+                            Column('last_login', DateTime),
+                            Column('sender_count', Integer),
+                            Column('recepient_count', Integer)
                             )
         # Создание таблицы истории активности пользователей
         login_history = Table('login_history', self.metadata,
@@ -68,7 +77,10 @@ class ServerStorage:
                                Column('id', Integer, primary_key=True),
                                Column('user_id', ForeignKey('Users.id')),
                                Column('contact_name', String),
-                               Column('contact_time', DateTime)
+                               Column('message', String),
+                               Column('contact_time', DateTime),
+                               Column('send_count', Integer),
+                               Column('recep_count', Integer)
                                )
         # Создаем  таблицы
         self.metadata.create_all(self.database_engine)
@@ -85,7 +97,9 @@ class ServerStorage:
             user = res.first()
             user.last_login = datetime.datetime.now()
         else:
-            user = self.AllUsers(username, ip_address,  port)
+            sender_count = 0
+            recepient_count = 0
+            user = self.AllUsers(username, ip_address,  port, sender_count, recepient_count)
             self.session.add(user)
             self.session.commit()
         date_time = datetime.datetime.now()
@@ -93,11 +107,16 @@ class ServerStorage:
         self.session.add(history)
         self.session.commit()
 
-    def contact(self, username, contact_name, contact_time):
+    def contact(self, username, contact_name, contact_time, message):
+        sender = self.session.query(self.AllUsers).filter_by(username=username).first()
+        recipient = self.session.query(self.AllUsers).filter_by(username=contact_name).first()
+        sender.sender_count+= 1
+        recipient.recepient_count += 1
+
+
         res = self.session.query(self.AllUsers).filter_by(username=username)
         user = res.first()
-
-        contacts = self.ClientContacts(user.id, contact_name, contact_time)
+        contacts = self.ClientContacts(user.id, contact_name, contact_time, message, sender.sender_count, recipient.recepient_count)
         self.session.add(contacts)
         self.session.commit()
 
@@ -127,11 +146,13 @@ class ServerStorage:
         query = self.session.query(
             self.AllUsers.username,
             self.ClientContacts.contact_name,
+            self.ClientContacts.message,
             self.ClientContacts.contact_time,
-
         ).join(self.AllUsers)
         if username:
             query = query.filter(self.AllUsers.username == username)
+            print('*' * 50,query.count())
+
         return query.all()
 
 
@@ -146,10 +167,10 @@ if __name__ == '__main__':
     print('============== test AllUsers ==============')
     pprint(test_db.user_list())
     #
-    test_db.contact('client_2', 'client_1', datetime.datetime.now())
-    test_db.contact('client_2', 'client_3', datetime.datetime.now())
-    test_db.contact('client_3', 'client_1', datetime.datetime.now())
-    test_db.contact('client_3', 'client_2', datetime.datetime.now())
+    test_db.contact('client_2', 'client_1', datetime.datetime.now(), 'test_2_1')
+    test_db.contact('client_2', 'client_3', datetime.datetime.now(), 'test_2_3')
+    test_db.contact('client_3', 'client_1', datetime.datetime.now(), 'test_3_1')
+    test_db.contact('client_3', 'client_2', datetime.datetime.now(), 'test_3_2')
 
     print('============== test ClientsContacts ==============')
     test_db.contacts_list('client_2')

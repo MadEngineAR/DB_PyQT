@@ -199,7 +199,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                                         send_message(s_listener, response)
                                     elif s_listener.getpeername() == tuple(response['sock_address'][0]):
                                         send_message(s_listener, response)
-                                        self.database.contact(message[USER][ACCOUNT_NAME], message['to'],
+                                        self.database.contact(message[USER][ACCOUNT_NAME], message['to'], message,
                                                               datetime.datetime.now())
                                 except BrokenPipeError:
                                     print('Вах')
@@ -282,7 +282,10 @@ def main():
             username = input('Введите имя пользователя, либо Enter для просмотра контактов всех пользователей: ')
             if username:
                 res = sorted(database.contacts_list(username))
-                if not res:
+                res_all = sorted(database.history(username))
+                if not res and res_all:
+                    print(f'Пользователь {username} ни с кем не контактировал')
+                elif not res and not res_all:
                     print(f'Пользователь {username} не зарегистрирован в системе')
                     continue
                 for item in res:
