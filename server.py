@@ -6,6 +6,8 @@ import dis
 import socket
 import sys
 import threading
+from pprint import pprint
+
 from server_DB import ServerStorage
 from descriptor import NonNegative
 from my_socket import MySocket
@@ -20,6 +22,7 @@ logger = log
 users = []
 # Глобальная переменная, переходит в истину если используется socket.type SOCK_STREAM
 flag = False
+flag_user_valid = False
 database = ServerStorage()
 
 
@@ -68,6 +71,11 @@ class Server(threading.Thread, metaclass=ServerVerifier):
 
     def process_client_message(self, message):
         global users
+        users_1 = self.database.user_list()
+        users_2 = []
+        for user in users_1:
+            users_2.append({"account_name": user.username, "sock": (user.ip_address, user.port)})
+        print(users_2)
         logger.debug(f'Получено сообщение от клиента {message}')
         if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
@@ -83,6 +91,48 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                 'login': message['user']['account_name'],
                 'sock': message['user']['sock']
             }
+        elif ACTION in message and message[ACTION] == 'get_contacts' and TIME in message \
+                and USER in message and message[USER][ACCOUNT_NAME]:
+            username = message[USER][ACCOUNT_NAME]
+            alert = []
+            res = sorted(database.contacts_list(username))
+            for item in res:
+                if item.contact_name not in alert:
+                    alert.append(item.contact_name)
+            print(alert)
+            logger.info(f'Cформирован список контактов клиента {username}')
+
+            return {
+                RESPONSE: 202,
+                'alert': alert,
+                'login': message['user']['account_name'],
+                'sock': message['user']['sock']
+            }
+        elif ACTION in message and message[ACTION] == 'add_contact' and TIME in message \
+                and USER in message and message[USER][ACCOUNT_NAME]:
+            username = message[USER][ACCOUNT_NAME]
+            contact_name = message['contact']
+            alert = []
+            res_all = sorted(database.user_list())
+            for item in res_all:
+                if item.username == contact_name:
+                    res = sorted(database.contacts_list(username))
+                    for el in res:
+                        if el.contact_name not in alert:
+                            alert.append(item.contact_name)
+                    alert.append(contact_name)
+                    global flag_user_valid
+                    flag_user_valid = True
+                    print(alert)
+                    logger.info(f'Добавлен {contact_name}  в список контактов клиента {username}')
+                    return {
+                        RESPONSE: 205,
+                        'alert': alert,
+                        'login': message['user']['account_name'],
+                        'message_text': 'Вы в черном списке. Мои поздравления',
+                        'sock': message['user']['sock']
+                    }
+
         elif ACTION in message and message[ACTION] == 'message' and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
             return {
@@ -177,9 +227,10 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                         for s_listener in send_data_lst:
                             if s_listener.getpeername() in self.clients_socket_names \
                                     and s_listener.getpeername() == tuple(message['user']['sock']) \
-                                    and message['action'] == 'presence':
+                                    and (message['action'] == 'presence' or message['action'] == 'get_contacts'):
                                 try:
                                     response = self.process_client_message(message)
+                                    print(response)
                                     send_message(s_listener, response)
                                 except BrokenPipeError:
                                     print('Вах')
@@ -262,7 +313,7 @@ def main():
         elif command == 'exit':
             print('Завершение соединения.')
             logger.info('Завершение работы по команде пользователя.')
-            # Задержка    неоходима, чтобы успело уйти сообщение о выходе
+            # Задержка необходима, чтобы успело уйти сообщение о выходе
             break
         elif command == 'history':
             username = input('Введите имя пользователя, либо Enter для просмотра истории всех пользователей: ')

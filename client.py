@@ -91,6 +91,37 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
         logger.debug(f'Сформирован словарь сообщения: {message_dict}')
         return message_dict
 
+    def create_user_contacts_message(self):
+        logger.debug('Сформировано запрос серверу на получение списка контактов')
+        # Генерация запроса о присутствии клиента
+        data = {
+            'action': 'get_contacts',
+            'time': time.time(),
+            'user': {
+                "account_name": self.account_name,
+                "sock": self.sock.getsockname(),
+            }
+        }
+        return data
+
+    def add_user_contacts_message(self, contact_name):
+        if not contact_name:
+            contact_name = input('Введите имя контакта: ')
+        # Генерация запроса о присутствии клиента
+
+        data = {
+            'action': 'add_contact',
+            'time': time.time(),
+            'user': {
+                "account_name": self.account_name,
+                "sock": self.sock.getsockname(),
+            },
+            'contact': contact_name
+        }
+        logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
+                     f' {self.account_name}')
+        return data
+
     def user_interactive(self):
         #    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         """Функция взаимодействия с пользователем, запрашивает команды, отправляет сообщения"""
@@ -98,11 +129,19 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
         print('message - отправить сообщение. Кому и текст будет запрошены отдельно.')
         print('help - вывести подсказки по командам')
         print('exit - выход из программы')
-
+        print('get_contacts - получение списка контактов(только клиентов, которым писал пользователь)')
+        print('add_contact - добавление контакта')
+        print('del_contact - удаление контакта')
         while True:
             command = input('Введите команду: ')
             if command == 'message':
                 res = self.create_message()
+                send_message(self.sock, res)
+            elif command == 'get_contacts':
+                res = self.create_user_contacts_message()
+                send_message(self.sock, res)
+            elif command == 'add_contact':
+                res = self.add_user_contacts_message(None)
                 send_message(self.sock, res)
             elif command == 'help':
                 print('Help yourself with yourself')
@@ -147,6 +186,8 @@ class ClientListener(threading.Thread, metaclass=ClientVerifier):
                 if 'response' in message:
                     if message['response'] == 200 and message['data']:
                         print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
+                    if message['response'] == 202:
+                        print(f'\n {message}')
                     logger.info('Bad request 400')
                 logger.info('Ошибка чтения данных')
             except (IncorrectDataRecivedError, ValueError):

@@ -47,8 +47,6 @@ class ServerStorage:
             self.send_count = send_count
             self.recep_count = recep_count
 
-
-
     def __init__(self):
         self.database_engine = create_engine('sqlite:///server_database_console.db', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
@@ -99,7 +97,7 @@ class ServerStorage:
         else:
             sender_count = 0
             recepient_count = 0
-            user = self.AllUsers(username, ip_address,  port, sender_count, recepient_count)
+            user = self.AllUsers(username, ip_address, port, sender_count, recepient_count)
             self.session.add(user)
             self.session.commit()
         date_time = datetime.datetime.now()
@@ -110,13 +108,13 @@ class ServerStorage:
     def contact(self, username, contact_name, contact_time, message):
         sender = self.session.query(self.AllUsers).filter_by(username=username).first()
         recipient = self.session.query(self.AllUsers).filter_by(username=contact_name).first()
-        sender.sender_count+= 1
+        sender.sender_count += 1
         recipient.recepient_count += 1
-
 
         res = self.session.query(self.AllUsers).filter_by(username=username)
         user = res.first()
-        contacts = self.ClientContacts(user.id, contact_name, contact_time, message, sender.sender_count, recipient.recepient_count)
+        contacts = self.ClientContacts(user.id, contact_name, contact_time, message, sender.sender_count,
+                                       recipient.recepient_count)
         self.session.add(contacts)
         self.session.commit()
 
@@ -151,7 +149,6 @@ class ServerStorage:
         ).join(self.AllUsers)
         if username:
             query = query.filter(self.AllUsers.username == username)
-            print('*' * 50,query.count())
 
         return query.all()
 
