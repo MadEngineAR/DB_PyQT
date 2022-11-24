@@ -12,6 +12,8 @@ from logs.client_log_config import log
 from errors import IncorrectDataRecivedError, ReqFieldMissingError, ServerError
 
 # logger = logging.getLogger('client')
+from server import database
+
 logger = log
 
 
@@ -105,23 +107,68 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
         return data
 
     def add_user_contacts_message(self, contact_name):
+        contact_list = []
+        res = sorted(database.contacts_list(self.account_name))
+        for item in res:
+            if item.contact_name not in contact_list:
+                contact_list.append(item.contact_name)
+        # print(contact_list)
         if not contact_name:
             contact_name = input('Введите имя контакта: ')
-        # Генерация запроса о присутствии клиента
+            while True:
+                contact_is_register = sorted(database.user_list(contact_name))
+                if contact_name not in contact_list:
+                    if contact_is_register:
+                        data = {
+                            'action': 'add_contact',
+                            'time': time.time(),
+                            'user': {
+                                "account_name": self.account_name,
+                                "sock": self.sock.getsockname(),
+                            },
+                            'contact': contact_name
+                        }
+                        logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
+                                     f' {self.account_name}')
+                        return data
+                elif contact_name in contact_list:
+                    print('Данный пользователь уже в вашем списке контактов')
+                    break
 
-        data = {
-            'action': 'add_contact',
-            'time': time.time(),
-            'user': {
-                "account_name": self.account_name,
-                "sock": self.sock.getsockname(),
-            },
-            'contact': contact_name
-        }
-        logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
-                     f' {self.account_name}')
-        return data
+                else:
+                    print(f'Вы указали не зарегистрированного пользователя {contact_name}')
+                    contact_name = input('Введите имя контакта: ')
+    def del_user_contacts_message(self, contact_name):
+        contact_list = []
+        res = sorted(database.contacts_list(self.account_name))
+        for item in res:
+            if item.contact_name not in contact_list:
+                contact_list.append(item.contact_name)
+        if not contact_name:
+            contact_name = input('Введите имя контакта: ')
+            while True:
+                contact_is_register = sorted(database.user_list(contact_name))
+                if contact_name in contact_list:
+                    if contact_is_register:
+                        data = {
+                            'action': 'del_contact',
+                            'time': time.time(),
+                            'user': {
+                                "account_name": self.account_name,
+                                "sock": self.sock.getsockname(),
+                            },
+                            'contact': contact_name
+                        }
+                        logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователя'
+                                     f' {self.account_name}')
+                        return data
+                elif contact_name not in contact_list:
+                    print('Данный пользователь не состоит в вашем списке контактов')
+                    break
 
+                else:
+                    print(f'Вы указали не зарегистрированного пользователя {contact_name}')
+                    contact_name = input('Введите имя контакта: ')
     def user_interactive(self):
         #    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         """Функция взаимодействия с пользователем, запрашивает команды, отправляет сообщения"""
@@ -142,7 +189,16 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                 send_message(self.sock, res)
             elif command == 'add_contact':
                 res = self.add_user_contacts_message(None)
-                send_message(self.sock, res)
+                try:
+                    send_message(self.sock, res)
+                except TypeError:
+                    continue
+            elif command == 'del_contact':
+                res = self.del_user_contacts_message(None)
+                try:
+                    send_message(self.sock, res)
+                except TypeError:
+                    continue
             elif command == 'help':
                 print('Help yourself with yourself')
             elif command == 'exit':
@@ -184,9 +240,14 @@ class ClientListener(threading.Thread, metaclass=ClientVerifier):
             try:
                 message = get_message(self.sock)
                 if 'response' in message:
+                    # print(message['response'])
                     if message['response'] == 200 and message['data']:
                         print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
                     if message['response'] == 202:
+                        print(f'\n {message}')
+                    if message['response'] == 205:
+                        print(f'\n {message}')
+                    if message['response'] == 210:
                         print(f'\n {message}')
                     logger.info('Bad request 400')
                 logger.info('Ошибка чтения данных')
@@ -263,7 +324,6 @@ def main_client():
         user_interface.user_interactive()
         user_interface.daemon = True
         user_interface.start()
-        # user_interface.join()
         logger.debug('Запущены процессы')
         while True:
             time.sleep(1)

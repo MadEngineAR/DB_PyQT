@@ -71,11 +71,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
 
     def process_client_message(self, message):
         global users
-        users_1 = self.database.user_list()
-        users_2 = []
-        for user in users_1:
-            users_2.append({"account_name": user.username, "sock": (user.ip_address, user.port)})
-        print(users_2)
+        # print(message)
         logger.debug(f'Получено сообщение от клиента {message}')
         if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
@@ -83,8 +79,8 @@ class Server(threading.Thread, metaclass=ServerVerifier):
             logger.info(f'Соединение с клиентом: НОРМАЛЬНОЕ {msg}')
             if message[USER] not in users:
                 users.append(message[USER])
-                self.database.user_login(message[USER][ACCOUNT_NAME], message['user']['sock'][0],
-                                         int(message['user']['sock'][1]))
+            self.database.user_login(message[USER][ACCOUNT_NAME], message['user']['sock'][0],
+                                     int(message['user']['sock'][1]))
             return {
                 RESPONSE: 200,
                 'data': None,
@@ -99,7 +95,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
             for item in res:
                 if item.contact_name not in alert:
                     alert.append(item.contact_name)
-            print(alert)
+            # print(alert)
             logger.info(f'Cформирован список контактов клиента {username}')
 
             return {
@@ -110,38 +106,40 @@ class Server(threading.Thread, metaclass=ServerVerifier):
             }
         elif ACTION in message and message[ACTION] == 'add_contact' and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
-            username = message[USER][ACCOUNT_NAME]
             contact_name = message['contact']
-            alert = []
             res_all = sorted(database.user_list())
             for item in res_all:
                 if item.username == contact_name:
-                    res = sorted(database.contacts_list(username))
-                    for el in res:
-                        if el.contact_name not in alert:
-                            alert.append(item.contact_name)
-                    alert.append(contact_name)
-                    global flag_user_valid
-                    flag_user_valid = True
-                    print(alert)
-                    logger.info(f'Добавлен {contact_name}  в список контактов клиента {username}')
                     return {
-                        RESPONSE: 205,
-                        'alert': alert,
-                        'login': message['user']['account_name'],
-                        'message_text': 'Вы в черном списке. Мои поздравления',
-                        'sock': message['user']['sock']
+                        RESPONSE: 205
+                    }
+
+        elif ACTION in message and message[ACTION] == 'del_contact' and TIME in message \
+                and USER in message and message[USER][ACCOUNT_NAME]:
+            contact_name = message['contact']
+            res_all = sorted(database.user_list())
+            for item in res_all:
+                if item.username == contact_name:
+                    return {
+                        RESPONSE: 210
                     }
 
         elif ACTION in message and message[ACTION] == 'message' and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
-            return {
+            try:
+                sock_address = [user['sock'] for user in users if user['account_name'] == message['to']][0]
+            except IndexError:
+                sock_address = ''
+            # print(sock_address)
+            msg = {
                 RESPONSE: 200,
                 'data': message['message_text'],
                 'login': message['user']['account_name'],
                 'to': message['to'],
-                'sock_address': [user['sock'] for user in users if user['account_name'] == message['to']]
+                'sock_address': sock_address
             }
+            # print(msg)
+            return msg
         elif ACTION in message and message[ACTION] == 'exit' and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
             users.remove(message[USER])
@@ -227,11 +225,32 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                         for s_listener in send_data_lst:
                             if s_listener.getpeername() in self.clients_socket_names \
                                     and s_listener.getpeername() == tuple(message['user']['sock']) \
-                                    and (message['action'] == 'presence' or message['action'] == 'get_contacts'):
+                                    and (message['action'] == 'presence' or message['action'] == 'get_contacts' or
+                                         message['action'] == 'add_contact' or message['action'] == 'del_contact'):
                                 try:
-                                    response = self.process_client_message(message)
-                                    print(response)
-                                    send_message(s_listener, response)
+                                    if message['action'] == 'add_contact':
+                                        response = self.process_client_message(message)
+                                        # print(response)
+                                        send_message(s_listener, response)
+                                        message['message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
+                                        # print(message)
+                                        self.database.contact(message[USER][ACCOUNT_NAME], message['contact'],
+                                                              datetime.datetime.now(),
+                                                              message['message_text']
+                                                              )
+                                    elif message['action'] == 'del_contact':
+                                        response = self.process_client_message(message)
+                                        # print(response)
+                                        send_message(s_listener, response)
+                                        message[
+                                            'message_text'] = f'Deleted from {message[USER][ACCOUNT_NAME]} contact list'
+                                        self.database.del_contact(message[USER][ACCOUNT_NAME], message['contact'],
+                                                                  datetime.datetime.now(),
+                                                                  message['message_text'])
+                                        # print('yep')
+                                    else:
+                                        response = self.process_client_message(message)
+                                        send_message(s_listener, response)
                                 except BrokenPipeError:
                                     print('Вах')
                                     send_data_lst.remove(s_listener)
@@ -245,13 +264,16 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                                     # print(response)
                                     if len(response['sock_address']) == 0 \
                                             and s_listener.getpeername() == tuple(message['user']['sock']):
-                                        response['data'] = f'Вы отправили сообщение не существующему ' \
+                                        response['data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
                                                            f'адресату {message["to"]}'
                                         send_message(s_listener, response)
-                                    elif s_listener.getpeername() == tuple(response['sock_address'][0]):
+                                    elif s_listener.getpeername() == tuple(response['sock_address']):
                                         send_message(s_listener, response)
-                                        self.database.contact(message[USER][ACCOUNT_NAME], message['to'], message,
-                                                              datetime.datetime.now())
+                                        self.database.contact(message[USER][ACCOUNT_NAME], message['to'],
+                                                              datetime.datetime.now(), message['message_text'])
+                                        # contacts = self.ClientContacts(user.id, contact_name, contact_time, message,
+                                        #                                sender.sender_count,
+                                        #                                recipient.recepient_count, is_friend)
                                 except BrokenPipeError:
                                     print('Вах')
                                     send_data_lst.remove(s_listener)

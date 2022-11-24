@@ -14,7 +14,7 @@
 """
 from pprint import pprint
 import sqlalchemy
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import mapper, sessionmaker
 import datetime
 
@@ -39,13 +39,14 @@ class ServerStorage:
             self.login_time = login_time
 
     class ClientContacts:
-        def __init__(self, user_id, contact_name, contact_time, message, send_count, recep_count):
+        def __init__(self, user_id, contact_name, contact_time, message, send_count, recep_count, is_friend):
             self.user_id = user_id
             self.contact_name = contact_name
             self.contact_time = contact_time
             self.message = message
             self.send_count = send_count
             self.recep_count = recep_count
+            self.is_friend = is_friend
 
     def __init__(self):
         self.database_engine = create_engine('sqlite:///server_database_console.db', echo=False, pool_recycle=7200,
@@ -78,7 +79,8 @@ class ServerStorage:
                                Column('message', String),
                                Column('contact_time', DateTime),
                                Column('send_count', Integer),
-                               Column('recep_count', Integer)
+                               Column('recep_count', Integer),
+                               Column('is_friend', Boolean)
                                )
         # Создаем  таблицы
         self.metadata.create_all(self.database_engine)
@@ -94,6 +96,7 @@ class ServerStorage:
         if res.count():
             user = res.first()
             user.last_login = datetime.datetime.now()
+            user.port = port
         else:
             sender_count = 0
             recepient_count = 0
@@ -105,26 +108,55 @@ class ServerStorage:
         self.session.add(history)
         self.session.commit()
 
-    def contact(self, username, contact_name, contact_time, message):
+    def contact(self, username, add_contact_name, contact_time, message):
         sender = self.session.query(self.AllUsers).filter_by(username=username).first()
-        recipient = self.session.query(self.AllUsers).filter_by(username=contact_name).first()
+        recipient = self.session.query(self.AllUsers).filter_by(username=add_contact_name).first()
         sender.sender_count += 1
         recipient.recepient_count += 1
 
         res = self.session.query(self.AllUsers).filter_by(username=username)
         user = res.first()
-        contacts = self.ClientContacts(user.id, contact_name, contact_time, message, sender.sender_count,
-                                       recipient.recepient_count)
-        self.session.add(contacts)
+        # print(user)
+        res = self.session.query(self.ClientContacts).filter_by(user_id=sender.id)
+        if res:
+            for contact in res:
+                if contact.contact_name == add_contact_name:
+                    contact.is_friend = True
+                    # print(contact.is_friend)
+
+        else:
+            is_friend = True
+            contacts = self.ClientContacts(user.id, add_contact_name, contact_time, message, sender.sender_count,
+                                           recipient.recepient_count, is_friend)
+            self.session.add(contacts)
         self.session.commit()
 
-    def user_list(self):
+    def del_contact(self, username, del_contact_name, contact_time, message):
+        sender = self.session.query(self.AllUsers).filter_by(username=username).first()
+        recipient = self.session.query(self.AllUsers).filter_by(username=del_contact_name).first()
+        sender.sender_count += 1
+        recipient.recepient_count += 1
+
+        res = self.session.query(self.ClientContacts).filter_by(user_id=sender.id)
+        for contact in res:
+            if contact.contact_name == del_contact_name:
+                contact.is_friend = False
+                print(contact.is_friend)
+                self.session.commit()
+
+
+
+
+    def user_list(self, username=None):
         query = self.session.query(
             self.AllUsers.username,
             self.AllUsers.ip_address,
             self.AllUsers.port,
             self.AllUsers.last_login
         )
+        if username:
+            query = query.filter(self.AllUsers.username == username)
+        return query.all()
         #  print(query)
         return query.all()
 
@@ -146,11 +178,12 @@ class ServerStorage:
             self.ClientContacts.contact_name,
             self.ClientContacts.message,
             self.ClientContacts.contact_time,
+            self.ClientContacts.is_friend
         ).join(self.AllUsers)
         if username:
             query = query.filter(self.AllUsers.username == username)
-
-        return query.all()
+        query_is_friend = query.filter(self.ClientContacts.is_friend == True)
+        return query_is_friend.all()
 
 
 if __name__ == '__main__':
