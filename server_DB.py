@@ -124,11 +124,10 @@ class ServerStorage:
                     contact.is_friend = True
                     # print(contact.is_friend)
 
-        else:
-            is_friend = True
-            contacts = self.ClientContacts(user.id, add_contact_name, contact_time, message, sender.sender_count,
-                                           recipient.recepient_count, is_friend)
-            self.session.add(contacts)
+        is_friend = True
+        contacts = self.ClientContacts(user.id, add_contact_name, contact_time, message, sender.sender_count,
+                                       recipient.recepient_count, is_friend)
+        self.session.add(contacts)
         self.session.commit()
 
     def del_contact(self, username, del_contact_name, contact_time, message):
@@ -144,11 +143,9 @@ class ServerStorage:
                 print(contact.is_friend)
                 self.session.commit()
 
-
-
-
     def user_list(self, username=None):
         query = self.session.query(
+            self.AllUsers.id,
             self.AllUsers.username,
             self.AllUsers.ip_address,
             self.AllUsers.port,

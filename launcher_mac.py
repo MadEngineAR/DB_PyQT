@@ -6,7 +6,6 @@ import subprocess
 import sys
 import time
 
-
 PYTHON_PATH = sys.executable
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 CLIENTS_COUNT = 2

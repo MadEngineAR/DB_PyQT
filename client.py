@@ -7,11 +7,8 @@ import time
 
 from common.variables import DEFAULT_IP_ADDRESS, DEFAULT_PORT
 from common.utils import get_message, send_message
-import logging
 from logs.client_log_config import log
 from errors import IncorrectDataRecivedError, ReqFieldMissingError, ServerError
-
-# logger = logging.getLogger('client')
 from server import database
 
 logger = log
@@ -131,13 +128,16 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                         logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
                                      f' {self.account_name}')
                         return data
+                    print(f'Вы указали не зарегистрированного пользователя {contact_name}')
+                    contact_name = input('Введите имя контакта: ')
                 elif contact_name in contact_list:
                     print('Данный пользователь уже в вашем списке контактов')
                     break
 
                 else:
                     print(f'Вы указали не зарегистрированного пользователя {contact_name}')
-                    contact_name = input('Введите имя контакта: ')
+                    break
+
     def del_user_contacts_message(self, contact_name):
         contact_list = []
         res = sorted(database.contacts_list(self.account_name))
@@ -162,13 +162,17 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                         logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователя'
                                      f' {self.account_name}')
                         return data
-                elif contact_name not in contact_list:
+                    else:
+                        print(f'Вы указали не зарегистрированного пользователя {contact_name}')
+                        contact_name = input('Введите имя контакта: ')
+                elif contact_name not in contact_list and contact_is_register:
                     print('Данный пользователь не состоит в вашем списке контактов')
                     break
 
                 else:
                     print(f'Вы указали не зарегистрированного пользователя {contact_name}')
                     contact_name = input('Введите имя контакта: ')
+
     def user_interactive(self):
         #    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         """Функция взаимодействия с пользователем, запрашивает команды, отправляет сообщения"""
