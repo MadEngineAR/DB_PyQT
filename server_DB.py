@@ -145,7 +145,7 @@ class ServerStorage:
             for contact in res:
                 if contact.contact_name == del_contact_name:
                     contact.is_friend = False
-                    print(contact.is_friend)
+                    # print(contact.is_friend)
         except AttributeError:
             pass
         self.session.commit()
@@ -165,6 +165,24 @@ class ServerStorage:
             query = query.filter(self.AllUsers.username == username)
         return query.all()
         #  print(query)
+        return query.all()
+
+    def users_gui(self):
+        query = self.session.query(
+            self.AllUsers.username,
+            self.AllUsers.ip_address,
+            self.AllUsers.port,
+            self.AllUsers.last_login
+        )
+        return query.all()
+
+    def stat_gui(self):
+        query = self.session.query(
+            self.AllUsers.username,
+            self.AllUsers.last_login,
+            self.AllUsers.sender_count,
+            self.AllUsers.recepient_count
+        )
         return query.all()
 
     def history(self, username=None):
