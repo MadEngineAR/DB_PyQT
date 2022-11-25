@@ -14,14 +14,15 @@
 """
 from pprint import pprint
 import sqlalchemy
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Boolean
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Boolean, Text
 from sqlalchemy.orm import mapper, sessionmaker
 import datetime
 from server import database
 
+global client_name
+
 
 class ClientStorage:
-    name = 'Test client'
     server_database = database
 
     class AllUsersClient:
@@ -34,21 +35,23 @@ class ClientStorage:
             self.recepient_count = recepient_count
 
     class MessageHistory:
-        def __init__(self, user_id, message_to, message_from, message_time):
+        def __init__(self, from_user, to_user, message, date):
             self.id = None
-            self.user_id = user_id
-            self.message_to = message_to
-            self.message_from = message_from
-            self.message_time = message_time
+            self.from_user = from_user
+            self.to_user = to_user
+            self.message = message
+            self.date = date
 
     class UsersContactsList:
         def __init__(self, username, contact_name):
             self.username = username
             self.contact_name = contact_name
 
-    def __init__(self):
-        self.database_engine = create_engine(f'sqlite:///client_{self.name}.db', echo=False, pool_recycle=7200,
+    def __init__(self, name):
+        self.database_engine = create_engine(f'sqlite:///client_{name}.db', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
+        global client_name
+        client_name = name
         self.metadata = MetaData()
         users_table = Table('UsersClient', self.metadata,
                             Column('id', Integer, primary_key=True),
@@ -60,10 +63,10 @@ class ClientStorage:
                             )
         message_history = Table('message_history', self.metadata,
                                 Column('id', Integer, primary_key=True),
-                                Column('username', String),
-                                Column('message_to', String),
-                                Column('message_from', String),
-                                Column('message_time', DateTime),
+                                Column('from_user', String),
+                                Column('to_user', String),
+                                Column('message', Text),
+                                Column('date', DateTime)
                                 )
         users_contacts = Table('users_contacts', self.metadata,
                                Column('id', Integer, primary_key=True),
@@ -79,7 +82,7 @@ class ClientStorage:
         session = sessionmaker(bind=self.database_engine)
         self.session = session()
 
-    def user_list_client(self, username=None):
+    def user_list_client(self, username):
         query = self.session.query(
             self.AllUsersClient.id,
             self.AllUsersClient.username,
@@ -113,7 +116,7 @@ class ClientStorage:
         self.session.commit()
         pprint(users)
 
-    def get_contact(self, username):
+    def get_contact(self):
         query = self.session.query(
             self.UsersContactsList.username,
             self.UsersContactsList.contact_name,
@@ -128,51 +131,92 @@ class ClientStorage:
     """
 
     def load_contact_from_server(self):
-        res = self.server_database.contacts_list('Russia')
+        res = self.server_database.contacts_list(client_name)
         user_contacts = []
         for item in res:
             if item.contact_name not in user_contacts:
-                print(item.username)
-                print(item.contact_name)
-                self.add_contact(item.username, item.contact_name)
+                contact = self.UsersContactsList(item.username, item.contact_name)
                 user_contacts.append(item.contact_name)
+                self.session.add(contact)
                 self.session.commit()
         return res
 
-    def add_contact(self, username, add_contact_name):
-        res = self.get_contact(username)
+    def add_contact(self, username, contact_name):
+        res = self.session.query(self.UsersContactsList).filter_by(contact_name=contact_name)
+        # print(res)
+        if not res.count():
+            contacts = self.UsersContactsList(username, contact_name)
+            self.session.add(contacts)
+            self.session.commit()
+
+    def del_contact(self, username, del_contact_name):
+        self.session.query(self.UsersContactsList).filter_by(contact_name=del_contact_name).delete()
+        self.session.commit()
+
+    """
+    Метод необходим в случае если база данных клиента слетела, либо ее не было, как в моем случае,
+    а клиент уже зарегистрирован, программа клиент ничего не знает о cвоих сообщениях.
+    """
+
+    def load_history_server_DB(self):
+        res = self.server_database.contacts_list(client_name)
         for item in res:
+            print(item.username)
+            print(item.contact_name)
+            print(item.message)
+            print(item.contact_time)
+            contact = self.MessageHistory(item.username, item.contact_name, item.message, item.contact_time)
+            self.session.add(contact)
+            self.session.commit()
+        return res
 
-                print(item.username)
-                print(item.contact_name)
-                self.add_contact(item.username, item.contact_name)
-                # user_contacts.append(item.contact_name)
-                self.session.commit()
-        contacts = self.UsersContactsList(username, add_contact_name)
-        self.session.add(contacts)
+    def save_message(self, from_user, to_user, message):
+        date = datetime.datetime.now()
+        message_row = self.MessageHistory(from_user, to_user, message, date)
+        self.session.add(message_row)
         self.session.commit()
 
-    def del_contact(self, username, add_contact_name):
-
-        contacts = self.UsersContactsList(username, add_contact_name)
-        self.session.delete(contacts)
-        self.session.commit()
-
+    def get_history(self, from_user=None, to_user=None):
+        query = self.session.query(self.MessageHistory).filter_by(from_user=from_user)
+        query_to = self.session.query(self.MessageHistory).filter_by(to_user=to_user)
+        print(query.count())
+        print(query_to.count())
+        history = []
+        if query.count():
+            if from_user:
+                history = [(history_row.from_user, history_row.to_user, history_row.message, history_row.date)
+                           for history_row in query.all()]
+            if to_user:
+                history_to = [
+                    (history_row.from_user, history_row.to_user, history_row.message, history_row.date)
+                    for history_row in query_to.all()]
+                history.extend(history_to)
+            return history
+        else:
+            self.load_history_server_DB()
 
 
 if __name__ == '__main__':
-    test_db = ClientStorage()
-    test_db.load_users_from_client()
-    test_list = test_db.load_users_from_client()
 
-    if not test_db.load_users_from_client():
-        test_db.load_users_from_server()
-        test_db.load_contact_from_server()
+    test_db = ClientStorage('Test')
+    # test_db.load_users_from_client()
+    # test_list = test_db.load_users_from_client()
+    #
+    # if not test_db.load_users_from_client():
+    #     test_db.load_users_from_server()
+    #     test_db.load_contact_from_server()
+    #
+    # print(test_db.get_contact('Russia'))
+    # test_db.add_contact('Russia', 'client_3')
+    # print(test_db.get_contact('Russia'))
+    # test_db.del_contact('Russia', 'client_3')
+    # print(test_db.get_contact('Russia'))
 
-    test_db.get_contact('Russia')
-    test_db.add_contact('Russia', 'rus')
-    test_db.del_contact('Russia', 'bus')
-    test_db.get_contact('Russia')
+    # test_db.save_message('Russia', 'client_2',
+    #                      f'Тестовое сообщение от Russia!')
+    # test_db.save_message('client_2', 'Russia',
+    #                      f'Другое сообщение от Russia')
+    # pprint(test_db.get_history())
     # print("Версия SQLAlchemy:", sqlalchemy.__version__)
     # test_db.user_login('client_1', '127.0.0.1', 7777)
     # test_db.user_login('client_2', '127.0.0.1', 8888)

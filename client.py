@@ -10,9 +10,9 @@ from common.utils import get_message, send_message
 from logs.client_log_config import log
 from errors import IncorrectDataRecivedError, ReqFieldMissingError, ServerError
 from server import database
+from client_DB import ClientStorage
 
 logger = log
-
 
 class ClientVerifier(type):
     # Вызывается для создания экземпляра класса, перед вызовом __init__
@@ -54,9 +54,10 @@ class ClientVerifier(type):
 
 
 class ClientSender(threading.Thread, metaclass=ClientVerifier):
-    def __init__(self, sock, account_name):
+    def __init__(self, sock, account_name, database_client):
         self.account_name = account_name
         self.sock = sock
+        self.database_client = database_client
         super().__init__()
 
     def create_exit_message(self):
@@ -234,9 +235,10 @@ def make_presence(sock, account_name):
 
 
 class ClientListener(threading.Thread, metaclass=ClientVerifier):
-    def __init__(self, sock, account_name):
+    def __init__(self, sock, account_name, database_client):
         self.account_name = account_name
         self.sock = sock
+        self.database_client = database_client
         super().__init__()
 
     def run(self):
@@ -247,6 +249,7 @@ class ClientListener(threading.Thread, metaclass=ClientVerifier):
                     # print(message['response'])
                     if message['response'] == 200 and message['data']:
                         print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
+                        self.database_client.save_message(message["login"], self.account_name, message["data"])
                     if message['response'] == 202:
                         print(f'\n {message}')
                     if message['response'] == 205:
@@ -319,12 +322,13 @@ def main_client():
         sys.exit(1)
     else:
 
-        receiver = ClientListener(s, answer['login'])
+        database_client = ClientStorage(answer['login'])
+        receiver = ClientListener(s, answer['login'], database_client)
         receiver.daemon = True
         receiver.start()
 
         # затем запускаем отправку сообщений и взаимодействие с пользователем.
-        user_interface = ClientSender(s, answer['login'])
+        user_interface = ClientSender(s, answer['login'], database_client)
         user_interface.user_interactive()
         user_interface.daemon = True
         user_interface.start()
