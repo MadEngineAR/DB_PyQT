@@ -3,11 +3,13 @@
 глобальный список USERS. Отправка сообщения происходит при совпадении адреса Сокета и текущего Клиента"""
 import datetime
 import dis
+import os
 import socket
 import sys
 import threading
-from pprint import pprint
-
+import configparser
+from PyQt6.QtCore import QTimer
+from PyQt6.QtWidgets import QApplication, QMessageBox
 from server_DB import ServerStorage
 from descriptor import NonNegative
 from my_socket import MySocket
@@ -16,14 +18,17 @@ from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
     PRESENCE, TIME, USER, ERROR, DEFAULT_PORT
 from common.utils import get_message, send_message
 from logs.server_log_config import log
+from server_qui import MainWindow, gui_create_model, HistoryWindow, create_stat_model, ConfigWindow
 
-# logger = logging.getLogger('server')
 logger = log
 users = []
 # Глобальная переменная, переходит в истину если используется socket.type SOCK_STREAM
 flag = False
 flag_user_valid = False
 database = ServerStorage()
+
+new_connection = False
+conflag_lock = threading.Lock()
 
 
 class ServerVerifier(type):
@@ -282,6 +287,12 @@ class Server(threading.Thread, metaclass=ServerVerifier):
 
 
 def main():
+    # Загрузка файла конфигурации сервера
+    config = configparser.ConfigParser()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print(dir_path)
+    config.read(f"{dir_path}/{'server.ini'}")
+
     try:
         if '-p' in sys.argv:
             listen_port = int(sys.argv[sys.argv.index('-p') + 1])
@@ -318,81 +329,86 @@ def main():
     server.daemon = True
     server.start()
 
-    print('Поддерживаемые команды:')
-    print('users - вывод всех известных пользователей')
-    print('history - вывод истории подключения клиента(-ов)')
-    print('сontacts - вывод списка контактов клиента(-ов)')
+    server_app = QApplication(sys.argv)
+    main_window = MainWindow()
 
-    while True:
-        command = input('Введите команду: ')
-        if command == 'users':
-            res = sorted(database.user_list())
-            for item in res:
-                print(f'Клиент {item.username} подключался с ip {item.ip_address} порта {item.port}'
-                      f'дата {item.last_login}')
-        elif command == 'help':
-            print('Help yourself with yourself')
-        elif command == 'exit':
-            print('Завершение соединения.')
-            logger.info('Завершение работы по команде пользователя.')
-            # Задержка необходима, чтобы успело уйти сообщение о выходе
-            break
-        elif command == 'history':
-            username = input('Введите имя пользователя, либо Enter для просмотра истории всех пользователей: ')
-            if username:
-                res = sorted(database.history(username))
-                if not res:
-                    print(f'Пользователь {username} не зарегистрирован в системе')
-                    continue
-                for item in res:
-                    print(f'Клиент {username} подключался с ip {item.ip_address} порта {item.port}'
-                          f'дата {item.login_time}')
-            else:
-                res_all = sorted(database.history())
-                for item in res_all:
-                    print(f'Клиент {item.username} подключался с ip {item.ip_address} порта {item.port}')
-        elif command == 'contacts':
-            username = input('Введите имя пользователя, либо Enter для просмотра контактов всех пользователей: ')
-            if username:
-                res = sorted(database.contacts_list(username))
-                res_all = sorted(database.history(username))
-                if not res and res_all:
-                    print(f'Пользователь {username} ни с кем не контактировал')
-                elif not res and not res_all:
-                    print(f'Пользователь {username} не зарегистрирован в системе')
-                    continue
-                for item in res:
-                    print(f'Клиент {username} имел контакт с {item.contact_name} дата {item.contact_time}')
-            else:
-                res_all = sorted(database.contacts_list(username=None))
-                for item in res_all:
-                    print(f'Клиент {item.username} имел контакт с {item.contact_name} дата {item.contact_time}')
+    # Инициализируем параметры в окна
+    main_window.statusBar().showMessage('Server Working')
+    main_window.active_clients_table.setModel(gui_create_model(database))
+    main_window.active_clients_table.resizeColumnsToContents()
+    main_window.active_clients_table.resizeRowsToContents()
+
+    # Функция, обновляющая список подключённых, проверяет флаг подключения, и
+    # если надо обновляет список
+    def list_update():
+        global new_connection
+        if new_connection:
+            main_window.active_clients_table.setModel(
+                gui_create_model(database))
+            main_window.active_clients_table.resizeColumnsToContents()
+            main_window.active_clients_table.resizeRowsToContents()
+            with conflag_lock:
+                new_connection = False
+
+    # Функция, создающая окно со статистикой клиентов
+    def show_statistics():
+        global stat_window
+        stat_window = HistoryWindow()
+        stat_window.history_table.setModel(create_stat_model(database))
+        stat_window.history_table.resizeColumnsToContents()
+        stat_window.history_table.resizeRowsToContents()
+        stat_window.show()
+
+    # Функция создающяя окно с настройками сервера.
+    def server_config():
+        global config_window
+        # Создаём окно и заносим в него текущие параметры
+        config_window = ConfigWindow()
+        config_window.db_path.insert(config['SETTINGS']['Database_path'])
+        config_window.db_file.insert(config['SETTINGS']['Database_file'])
+        config_window.port.insert(config['SETTINGS']['Default_port'])
+        config_window.ip.insert(config['SETTINGS']['Listen_Address'])
+        config_window.save_btn.clicked.connect(save_server_config)
+
+    # Функция сохранения настроек
+    def save_server_config():
+        global config_window
+        message = QMessageBox()
+        config['SETTINGS']['Database_path'] = config_window.db_path.text()
+        config['SETTINGS']['Database_file'] = config_window.db_file.text()
+        try:
+            port = int(config_window.port.text())
+        except ValueError:
+            message.warning(config_window, 'Ошибка', 'Порт должен быть числом')
         else:
-            print('Команда не распознана, попробуйте снова. help - вывести поддерживаемые команды.')
+            config['SETTINGS']['Listen_Address'] = config_window.ip.text()
+            if 1023 < port < 65536:
+                config['SETTINGS']['Default_port'] = str(port)
+                print(port)
+                with open('server.ini', 'w') as conf:
+                    config.write(conf)
+                    message.information(
+                        config_window, 'OK', 'Настройки успешно сохранены!')
+            else:
+                message.warning(
+                    config_window,
+                    'Ошибка',
+                    'Порт должен быть от 1024 до 65536')
 
+    # Таймер, обновляющий список клиентов 1 раз в секунду
+    timer = QTimer()
+    timer.timeout.connect(list_update)
+    timer.start(1000)
 
-# def user_interactive():
-#     """Функция взаимодействия с пользователем, запрашивает команды, отправляет сообщения"""
-#     print('Поддерживаемые команды:')
-#     print('users - вывод всех известных пользователей')
-#     print('history - вывод истории подключения клиента(-ов)')
-#     print('сontacts - вывод списка контактов клиента(-ов)')
-#
-#     while True:
-#         command = input('Введите команду: ')
-#         if command == 'users':
-#             res = sorted(database.user_list())
-#             pprint(res)
-#         elif command == 'help':
-#             print('Help yourself with yourself')
-#         elif command == 'exit':
-#             print('Завершение соединения.')
-#             logger.info('Завершение работы по команде пользователя.')
-#             # Задержка неоходима, чтобы успело уйти сообщение о выходе
-#             break
-#         else:
-#             print('Команда не распознана, попробуйте снова. help - вывести поддерживаемые команды.')
+    # Связываем кнопки с процедурами
+    main_window.refresh_button.triggered.connect(list_update)
+    main_window.show_history_button.triggered.connect(show_statistics)
+    main_window.config_btn.triggered.connect(server_config)
+
+    # Запускаем GUI
+    server_app.exec()
 
 
 if __name__ == '__main__':
     main()
+
