@@ -192,6 +192,19 @@ class ServerStorage:
         query_is_friend = query.filter(self.ClientContacts.is_friend == True)
         return query_is_friend.all()
 
+    def to_client_message(self, username):
+        query = self.session.query(
+            self.AllUsers.username,
+            self.ClientContacts.contact_name,
+            self.ClientContacts.message,
+            self.ClientContacts.contact_time,
+            self.ClientContacts.is_friend
+        ).join(self.AllUsers)
+        if username:
+            query = query.filter(self.ClientContacts.contact_name == username)
+        return query.all()
+
+
 
 if __name__ == '__main__':
     test_db = ServerStorage()

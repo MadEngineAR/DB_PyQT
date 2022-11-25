@@ -4,6 +4,7 @@ import json
 import socket
 import threading
 import time
+from pprint import pprint
 
 from common.variables import DEFAULT_IP_ADDRESS, DEFAULT_PORT
 from common.utils import get_message, send_message
@@ -13,6 +14,7 @@ from server import database
 from client_DB import ClientStorage
 
 logger = log
+
 
 class ClientVerifier(type):
     # Вызывается для создания экземпляра класса, перед вызовом __init__
@@ -110,7 +112,6 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
         for item in res:
             if item.contact_name not in contact_list:
                 contact_list.append(item.contact_name)
-        # print(contact_list)
         if not contact_name:
             contact_name = input('Введите имя контакта: ')
             while True:
@@ -128,6 +129,7 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                         }
                         logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
                                      f' {self.account_name}')
+                        self.database_client.add_contact(self.account_name, contact_name)
                         return data
                     print(f'Вы указали не зарегистрированного пользователя {contact_name}')
                     contact_name = input('Введите имя контакта: ')
@@ -162,6 +164,7 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                         }
                         logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователя'
                                      f' {self.account_name}')
+                        self.database_client.del_contact(self.account_name, contact_name)
                         return data
                     else:
                         print(f'Вы указали не зарегистрированного пользователя {contact_name}')
@@ -184,11 +187,14 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
         print('get_contacts - получение списка контактов(только клиентов, которым писал пользователь)')
         print('add_contact - добавление контакта')
         print('del_contact - удаление контакта')
+        print('history - история сообщений')
         while True:
             command = input('Введите команду: ')
             if command == 'message':
                 res = self.create_message()
                 send_message(self.sock, res)
+                if self.database_client.user_list_client(res['to']):
+                    self.database_client.save_message(self.account_name, res['to'], res['message_text'])
             elif command == 'get_contacts':
                 res = self.create_user_contacts_message()
                 send_message(self.sock, res)
@@ -213,6 +219,8 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                 # Задержка неоходима, чтобы успело уйти сообщение о выходе
                 time.sleep(0.5)
                 break
+            elif command == 'history':
+                pprint(self.database_client.get_history(self.account_name, self.account_name))
             else:
                 print('Команда не распознана, попробуйте снова. help - вывести поддерживаемые команды.')
 
@@ -249,7 +257,11 @@ class ClientListener(threading.Thread, metaclass=ClientVerifier):
                     # print(message['response'])
                     if message['response'] == 200 and message['data']:
                         print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
-                        self.database_client.save_message(message["login"], self.account_name, message["data"])
+                        if message['data'] == f'Вы отправили сообщение не существующему либо отключенному ' \
+                                f'адресату {message["to"]}':
+                            continue
+                        else:
+                            self.database_client.save_message(message["login"], self.account_name, message["data"])
                     if message['response'] == 202:
                         print(f'\n {message}')
                     if message['response'] == 205:
@@ -323,6 +335,7 @@ def main_client():
     else:
 
         database_client = ClientStorage(answer['login'])
+        database_client.init()
         receiver = ClientListener(s, answer['login'], database_client)
         receiver.daemon = True
         receiver.start()

@@ -91,11 +91,11 @@ class ClientStorage:
 
         )
         if username:
-            query = query.filter(self.AllUsers.username == username)
+            query = query.filter(self.AllUsersClient.username == username)
         return query.all()
 
     def load_users_from_client(self):
-        users = self.user_list_client()
+        users = self.user_list_client(client_name)
         return users
 
     """
@@ -106,15 +106,11 @@ class ClientStorage:
     def load_users_from_server(self):
         users = sorted(self.server_database.user_list())
         for item in users:
-            sender_count = 0
-            recepient_count = 0
-
             user = self.AllUsersClient(item.username, item.ip_address, item.port, item.sender_count,
                                        item.recepient_count)
             self.session.add(user)
             self.session.commit()
         self.session.commit()
-        pprint(users)
 
     def get_contact(self):
         query = self.session.query(
@@ -160,15 +156,15 @@ class ClientStorage:
 
     def load_history_server_DB(self):
         res = self.server_database.contacts_list(client_name)
+        res_to = self.server_database.to_client_message(client_name)
         for item in res:
-            print(item.username)
-            print(item.contact_name)
-            print(item.message)
-            print(item.contact_time)
             contact = self.MessageHistory(item.username, item.contact_name, item.message, item.contact_time)
             self.session.add(contact)
-            self.session.commit()
-        return res
+        for item in res_to:
+            contact_to = self.MessageHistory(item.username, item.contact_name, item.message, item.contact_time)
+            self.session.add(contact_to)
+        self.session.commit()
+        return res, res_to
 
     def save_message(self, from_user, to_user, message):
         date = datetime.datetime.now()
@@ -179,8 +175,6 @@ class ClientStorage:
     def get_history(self, from_user=None, to_user=None):
         query = self.session.query(self.MessageHistory).filter_by(from_user=from_user)
         query_to = self.session.query(self.MessageHistory).filter_by(to_user=to_user)
-        print(query.count())
-        print(query_to.count())
         history = []
         if query.count():
             if from_user:
@@ -190,15 +184,20 @@ class ClientStorage:
                 history_to = [
                     (history_row.from_user, history_row.to_user, history_row.message, history_row.date)
                     for history_row in query_to.all()]
-                history.extend(history_to)
-            return history
+                return [history, history_to]
         else:
+            self.load_history_server_DB()
+
+    def init(self):
+        # Если нет известных пользователей, значит и базы не было, подгружаем с сервера
+        if not self.load_users_from_client():
+            self.load_users_from_server()
+            self.load_contact_from_server()
             self.load_history_server_DB()
 
 
 if __name__ == '__main__':
-
-    test_db = ClientStorage('Test')
+    test_db = ClientStorage('client_Test_client')
     # test_db.load_users_from_client()
     # test_list = test_db.load_users_from_client()
     #
