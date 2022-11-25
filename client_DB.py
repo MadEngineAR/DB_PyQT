@@ -86,7 +86,6 @@ class ClientStorage:
             self.AllUsersClient.ip_address,
             self.AllUsersClient.port,
 
-
         )
         if username:
             query = query.filter(self.AllUsers.username == username)
@@ -94,17 +93,12 @@ class ClientStorage:
 
     def load_users_from_client(self):
         users = self.user_list_client()
-        # res = self.session.query(self.AllUsers).filter_by(username=username)
-        # if res.count():
-        for item in users:
-            print(item.username)
-            sender_count = 0
-            recepient_count = 0
-            user = self.AllUsersClient(item.username, item.ip_address, item.port, sender_count, recepient_count)
-            self.session.add(user)
-            self.session.commit()
-        self.session.commit()
+        return users
 
+    """
+    Метод необходим в случае если база данных клиента слетела, либо ее не было, как в моем случае
+    и если клиент уже зарегистрирован, программа клиент ничего не знает о доступных пользователях.
+    """
 
     def load_users_from_server(self):
         users = sorted(self.server_database.user_list())
@@ -112,26 +106,73 @@ class ClientStorage:
             sender_count = 0
             recepient_count = 0
 
-            user = self.AllUsersClient(item.username, item.ip_address, item.port, sender_count,
-                                       recepient_count)
+            user = self.AllUsersClient(item.username, item.ip_address, item.port, item.sender_count,
+                                       item.recepient_count)
             self.session.add(user)
             self.session.commit()
         self.session.commit()
         pprint(users)
 
+    def get_contact(self, username):
+        query = self.session.query(
+            self.UsersContactsList.username,
+            self.UsersContactsList.contact_name,
 
-# Загрузка контактов из базы данных сервера. Если клиент снова подключился и имеет список конта
-def add_contact(self, username, add_contact_name):
-    contacts = self.UsersContactsList(username, add_contact_name)
-    self.session.add(contacts)
-    self.session.commit()
+        )
+
+        return query.all()
+
+    """
+        Метод необходим в случае если база данных клиента слетела, либо ее не было, как в моем случае,
+        а клиент уже зарегистрирован, программа клиент ничего не знает о контактах.
+    """
+
+    def load_contact_from_server(self):
+        res = self.server_database.contacts_list('Russia')
+        user_contacts = []
+        for item in res:
+            if item.contact_name not in user_contacts:
+                print(item.username)
+                print(item.contact_name)
+                self.add_contact(item.username, item.contact_name)
+                user_contacts.append(item.contact_name)
+                self.session.commit()
+        return res
+
+    def add_contact(self, username, add_contact_name):
+        res = self.get_contact(username)
+        for item in res:
+
+                print(item.username)
+                print(item.contact_name)
+                self.add_contact(item.username, item.contact_name)
+                # user_contacts.append(item.contact_name)
+                self.session.commit()
+        contacts = self.UsersContactsList(username, add_contact_name)
+        self.session.add(contacts)
+        self.session.commit()
+
+    def del_contact(self, username, add_contact_name):
+
+        contacts = self.UsersContactsList(username, add_contact_name)
+        self.session.delete(contacts)
+        self.session.commit()
+
 
 
 if __name__ == '__main__':
     test_db = ClientStorage()
     test_db.load_users_from_client()
+    test_list = test_db.load_users_from_client()
+
     if not test_db.load_users_from_client():
         test_db.load_users_from_server()
+        test_db.load_contact_from_server()
+
+    test_db.get_contact('Russia')
+    test_db.add_contact('Russia', 'rus')
+    test_db.del_contact('Russia', 'bus')
+    test_db.get_contact('Russia')
     # print("Версия SQLAlchemy:", sqlalchemy.__version__)
     # test_db.user_login('client_1', '127.0.0.1', 7777)
     # test_db.user_login('client_2', '127.0.0.1', 8888)

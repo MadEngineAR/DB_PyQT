@@ -110,38 +110,45 @@ class ServerStorage:
 
     def contact(self, username, add_contact_name, contact_time, message):
         sender = self.session.query(self.AllUsers).filter_by(username=username).first()
-        recipient = self.session.query(self.AllUsers).filter_by(username=add_contact_name).first()
-        sender.sender_count += 1
-        recipient.recepient_count += 1
 
-        res = self.session.query(self.AllUsers).filter_by(username=username)
-        user = res.first()
-        # print(user)
-        res = self.session.query(self.ClientContacts).filter_by(user_id=sender.id)
-        if res:
-            for contact in res:
-                if contact.contact_name == add_contact_name:
-                    contact.is_friend = True
-                    # print(contact.is_friend)
+        try:
+            recipient = self.session.query(self.AllUsers).filter_by(username=add_contact_name).first()
+            sender.sender_count += 1
+            recipient.recepient_count += 1
+            res = self.session.query(self.AllUsers).filter_by(username=username)
+            user = res.first()
+            # print(user)
+            res = self.session.query(self.ClientContacts).filter_by(user_id=sender.id)
+            if res:
+                for contact in res:
+                    if contact.contact_name == add_contact_name:
+                        contact.is_friend = True
+                        # print(contact.is_friend)
 
-        is_friend = True
-        contacts = self.ClientContacts(user.id, add_contact_name, contact_time, message, sender.sender_count,
-                                       recipient.recepient_count, is_friend)
-        self.session.add(contacts)
+            is_friend = True
+            contacts = self.ClientContacts(user.id, add_contact_name, contact_time, message, sender.sender_count,
+                                           recipient.recepient_count, is_friend)
+            self.session.add(contacts)
+        except AttributeError:
+            pass
+
         self.session.commit()
 
     def del_contact(self, username, del_contact_name, contact_time, message):
-        sender = self.session.query(self.AllUsers).filter_by(username=username).first()
-        recipient = self.session.query(self.AllUsers).filter_by(username=del_contact_name).first()
-        sender.sender_count += 1
-        recipient.recepient_count += 1
+        try:
+            sender = self.session.query(self.AllUsers).filter_by(username=username).first()
+            recipient = self.session.query(self.AllUsers).filter_by(username=del_contact_name).first()
+            sender.sender_count += 1
+            recipient.recepient_count += 1
 
-        res = self.session.query(self.ClientContacts).filter_by(user_id=sender.id)
-        for contact in res:
-            if contact.contact_name == del_contact_name:
-                contact.is_friend = False
-                print(contact.is_friend)
-                self.session.commit()
+            res = self.session.query(self.ClientContacts).filter_by(user_id=sender.id)
+            for contact in res:
+                if contact.contact_name == del_contact_name:
+                    contact.is_friend = False
+                    print(contact.is_friend)
+        except AttributeError:
+            pass
+        self.session.commit()
 
     def user_list(self, username=None):
         query = self.session.query(
@@ -149,7 +156,10 @@ class ServerStorage:
             self.AllUsers.username,
             self.AllUsers.ip_address,
             self.AllUsers.port,
-            self.AllUsers.last_login
+            self.AllUsers.last_login,
+            self.AllUsers.sender_count,
+            self.AllUsers.recepient_count
+
         )
         if username:
             query = query.filter(self.AllUsers.username == username)
