@@ -4,6 +4,7 @@ import json
 import socket
 import threading
 import time
+from pprint import pprint
 
 from common.variables import DEFAULT_IP_ADDRESS, DEFAULT_PORT
 from common.utils import get_message, send_message
@@ -219,7 +220,7 @@ class ClientSender(threading.Thread, metaclass=ClientVerifier):
                 time.sleep(0.5)
                 break
             elif command == 'history':
-                self.database_client.get_history(self.account_name, self.account_name)
+                pprint(self.database_client.get_history(self.account_name, self.account_name))
             else:
                 print('Команда не распознана, попробуйте снова. help - вывести поддерживаемые команды.')
 
