@@ -33,39 +33,42 @@ if __name__ == '__main__':
         print('Номер порт должен находиться в диапазоне  [1024 - 65535]')
         sys.exit(1)
 
-    # Создаём клиентокое приложение
+    # Создаём клиентcкое приложение
     client_app = QApplication(sys.argv)
 
     # Если имя пользователя не было указано в командной строке то запросим его
     if not client_name:
-        start_dialog = UserNameDialog()
-        client_app.exec()
-        # Если пользователь ввёл имя и нажал ОК, то сохраняем ведённое и удаляем объект, инааче выходим
-        if start_dialog.ok_pressed:
-            client_name = start_dialog.client_name.text()
-            del start_dialog
-        else:
-            exit(0)
+        client_name = input('fdfdf')
+        # start_dialog = UserNameDialog()
+        # start_dialog.exec()
+        # Если пользователь ввёл имя и нажал ОК, то сохраняем ведённое и удаляем объект, иначе выходим
+        # if start_dialog.ok_pressed:
+        #     client_name = start_dialog.client_name.text()
+        #     del start_dialog
+        # else:
+        #     exit(0)
 
     # Записываем логи
     logger.info(
-        f'Запущен клиент с парамертами: адрес сервера: {server_address} , порт: {server_port}, имя пользователя: {client_name}')
+        f'Запущен клиент с парамертами: адрес сервера: {server_address} , порт: {server_port},'
+        f'имя пользователя: {client_name}')
 
     # Создаём объект базы данных
-    database = ClientStorage(client_name)
-    database.init()
+    database_client = ClientStorage(client_name)
+    database_client.init()
 
     # Создаём объект - транспорт и запускаем транспортный поток
     try:
-        transport = ClientTransport(server_port, server_address, database, client_name)
+        transport = ClientTransport(server_port, server_address, database_client, client_name)
     except ServerError as error:
+        transport = None
         print(error.text)
         exit(1)
     transport.setDaemon(True)
     transport.start()
 
     # Создаём GUI
-    main_window = ClientMainWindow(database, transport)
+    main_window = ClientMainWindow(database_client, transport)
     main_window.make_connection(transport)
     main_window.setWindowTitle(f'Чат Программа alpha release - {client_name}')
     client_app.exec()

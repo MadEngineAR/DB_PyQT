@@ -1,0 +1,23 @@
+2022-11-28 20:06:16,534 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 20:23:49,571 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 20:59:14,752 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 21:00:21,499 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 21:13:05,708 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 21:25:39,446 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 21:26:25,055 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 21:29:31,091 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 21:42:10,045 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 22:09:10,425 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 22:22:10,905 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 22:35:04,968 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 22:38:17,456 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 22:43:28,064 - INFO     - Клиент ('127.0.0.1', 62169) отключился от сервера. 
+2022-11-28 22:44:58,148 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-11-28 22:45:11,770 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 62170)>,), {}) 
+2022-11-28 22:45:11,770 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-11-28 22:45:11,770 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669657509.7645178, 'type': 'status', 'user': {'account_name': '1', 'sock': ['127.0.0.1', 62170]}} 
+2022-11-28 22:45:11,770 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-11-28 22:45:11,787 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669657509.7645178, 'type': 'status', 'user': {'account_name': '1', 'sock': ['127.0.0.1', 62170]}} 
+2022-11-28 22:45:11,787 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-11-28 22:45:11,792 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777)>, {'response': 200, 'data': None, 'login': '1', 'sock': ['127.0.0.1', 62170]}), {}) 
+2022-11-28 22:45:11,792 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 

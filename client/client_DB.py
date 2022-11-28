@@ -137,15 +137,19 @@ class ClientStorage:
                 self.session.commit()
         return res
 
-    def add_contact(self, username, contact_name):
+    def add_contact(self, contact_name):
         res = self.session.query(self.UsersContactsList).filter_by(contact_name=contact_name)
         # print(res)
         if not res.count():
+            try:
+                username = self.session.query(self.AllUsersClient).filter_by(username=client_name)
+            except Exception:
+                username = ''
             contacts = self.UsersContactsList(username, contact_name)
             self.session.add(contacts)
             self.session.commit()
 
-    def del_contact(self, username, del_contact_name):
+    def del_contact(self, del_contact_name):
         self.session.query(self.UsersContactsList).filter_by(contact_name=del_contact_name).delete()
         self.session.commit()
 
@@ -166,9 +170,13 @@ class ClientStorage:
         self.session.commit()
         return res, res_to
 
-    def save_message(self, from_user, to_user, message):
+    def save_message(self, to_user, message):
         date = datetime.datetime.now()
-        message_row = self.MessageHistory(from_user, to_user, message, date)
+        try:
+            username = self.session.query(self.AllUsersClient).filter_by(username=client_name)
+        except Exception:
+            username = ''
+        message_row = self.MessageHistory(username, to_user, message, date)
         self.session.add(message_row)
         self.session.commit()
 
@@ -194,6 +202,22 @@ class ClientStorage:
             self.load_users_from_server()
             self.load_contact_from_server()
             self.load_history_server_DB()
+
+        # Функция проверяющяя наличие пользователя в известных
+
+    def check_user(self, user):
+        if self.session.query(self.AllUsersClient).filter_by(username=user).count():
+            return True
+        else:
+            return False
+
+        # Функция проверяющяя наличие пользователя контактах
+
+    def check_contact(self, contact):
+        if self.session.query(self.UsersContactsList).filter_by(contact_name=contact).count():
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':

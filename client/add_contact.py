@@ -2,11 +2,14 @@ import sys
 import logging
 
 sys.path.append('../')
-from PyQt5.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from logs.client_log_config import log
 
-logger = logging.getLogger('client')
+
+# Инициализация клиентского логера
+logger = log
 
 
 # Диалог выбора контакта для добавления
