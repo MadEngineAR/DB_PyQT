@@ -82,12 +82,22 @@ class ClientStorage:
         session = sessionmaker(bind=self.database_engine)
         self.session = session()
 
-    def user_list_client(self, username):
+    def user_list_client(self, username=None):
         query = self.session.query(
             self.AllUsersClient.id,
             self.AllUsersClient.username,
             self.AllUsersClient.ip_address,
             self.AllUsersClient.port,
+
+        )
+        if username:
+            query = query.filter(self.AllUsersClient.username == username)
+        return query.all()
+
+    def contacts_list(self, username=None):
+        query = self.session.query(
+            self.UsersContactsList.username,
+            self.UsersContactsList.contact_name,
 
         )
         if username:
