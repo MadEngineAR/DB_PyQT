@@ -3,9 +3,7 @@ import time
 import threading
 from PyQt6.QtCore import pyqtSignal, QObject
 from common.utils import *
-from common.variables import *
-from errors import ServerError
-from server import database
+from errors import ServerError, IncorrectDataRecivedError
 from logs.client_log_config import log
 
 # Объект блокировки для работы с сокетом
@@ -13,6 +11,7 @@ socket_lock = threading.Lock()
 # Инициализация клиентского логера
 logger = log
 sys.path.append('../')
+
 
 # Класс - Транспорт, отвечает за взаимодействие с сервером
 class ClientTransport(threading.Thread, QObject):
@@ -26,17 +25,18 @@ class ClientTransport(threading.Thread, QObject):
         QObject.__init__(self)
 
         # Класс База данных - работа с базой
-        self.client_database = database_client
+        self.database_client = database_client
         # Имя пользователя
         self.account_name = account_name
         # Сокет для работы с сервером
         self.transport = None
+        self.sock = self.transport
         # Устанавливаем соединение:
         self.connection_init(port, ip_address)
         # Обновляем таблицы известных пользователей и контактов
         try:
-            self.user_list_update()
-            self.contacts_list_update()
+            self.database_client.user_list_client()
+            self.database_client.contacts_list()
         except OSError as err:
             if err.errno:
                 logger.critical(f'Потеряно соединение с сервером.')
@@ -79,8 +79,8 @@ class ClientTransport(threading.Thread, QObject):
         # Посылаем серверу приветственное сообщение и получаем ответ что всё нормально или ловим исключение.
         try:
             with socket_lock:
-                send_message(self.transport, self.create_presence())
-                self.process_server_ans(get_message(self.transport))
+                send_message(self.transport, self.make_presence(self.transport, self.account_name))
+                self.response_process()
         except (OSError, json.JSONDecodeError):
             logger.critical('Потеряно соединение с сервером!')
             raise ServerError('Потеряно соединение с сервером!')
@@ -89,13 +89,53 @@ class ClientTransport(threading.Thread, QObject):
         logger.info('Соединение с сервером успешно установлено.')
 
     # Функция, генерирующая приветственное сообщение для сервера
-    def create_message(self):
-        """Функция запрашивает текст сообщения и возвращает его.
-        Так же завершает работу при вводе подобной комманды
-        """
+    @staticmethod
+    def make_presence(sock, account_name):
+        # if not account_name:
+        #     account_name = input('Введите имя пользователя: ')
+        logger.debug('Сформировано сообщение серверу')
+        # Генерация запроса о присутствии клиента
+        data = {
+            'action': 'presence',
+            'time': time.time(),
+            'type': 'status',
+            'user': {
+                "account_name": account_name,
+                "sock": sock.getsockname(),
+            }
+        }
+        return data
 
-        message = input('Введите сообщение для отправки: ')
-        to = input('Введите получателя(-ей) сообщения: ')
+    def response_process(self):
+        try:
+            message = get_message(self.transport)
+            if 'response' in message:
+                # print(message['response'])
+                if message['response'] == 200 and message['data']:
+                    print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
+                    if message['data'] == f'Вы отправили сообщение не существующему либо отключенному ' \
+                                          f'адресату {message["to"]}':
+                        pass
+                    else:
+                        self.database_client.save_message(message["login"], self.account_name, message["data"])
+                        self.new_message.emit(message['login'])
+                if message['response'] == 202:
+                    print(f'\n {message}')
+                if message['response'] == 205:
+                    print(f'\n {message}')
+                if message['response'] == 210:
+                    print(f'\n {message}')
+
+                logger.info('Bad request 400')
+            logger.info('Ошибка чтения данных')
+        except (IncorrectDataRecivedError, ValueError):
+            logger.error(f'Не удалось декодировать полученное сообщение.')
+        except (OSError, ConnectionError, ConnectionAbortedError,
+                ConnectionResetError, json.JSONDecodeError):
+            logger.critical(f'Потеряно соединение с сервером.')
+            print('Потеряно соединение с сервером.')
+
+    def create_message(self, to, message):
         message_dict = {
             'action': 'message',
             'time': time.time(),
@@ -110,24 +150,24 @@ class ClientTransport(threading.Thread, QObject):
         return message_dict
 
     # Функция обрабатывающяя сообщения от сервера. Ничего не возращает. Генерирует исключение при ошибке.
-    def process_server_ans(self, message):
-        logger.debug(f'Разбор сообщения от сервера: {message}')
-
-        # Если это подтверждение чего-либо
-        if RESPONSE in message:
-            if message[RESPONSE] == 200:
-                return
-            elif message[RESPONSE] == 400:
-                raise ServerError(f'{message[ERROR]}')
-            else:
-                logger.debug(f'Принят неизвестный код подтверждения {message[RESPONSE]}')
-
-        # Если это сообщение от пользователя добавляем в базу, даём сигнал о новом сообщении
-        elif ACTION in message and message[ACTION] == MESSAGE and SENDER in message and DESTINATION in message \
-                and MESSAGE_TEXT in message and message[DESTINATION] == self.username:
-            logger.debug(f'Получено сообщение от пользователя {message[SENDER]}:{message[MESSAGE_TEXT]}')
-            self.database.save_message(message[SENDER] , 'in' , message[MESSAGE_TEXT])
-            self.new_message.emit(message[SENDER])
+    #     def process_server_ans(self, message):
+    #         logger.debug(f'Разбор сообщения от сервера: {message}')
+    #
+    #         # Если это подтверждение чего-либо
+    #         if RESPONSE in message:
+    #             if message[RESPONSE] == 200:
+    #                 return
+    #             elif message[RESPONSE] == 400:
+    #                 raise ServerError(f'{message[ERROR]}')
+    #             else:
+    #                 logger.debug(f'Принят неизвестный код подтверждения {message[RESPONSE]}')
+    #
+    #         # Если это сообщение от пользователя добавляем в базу, даём сигнал о новом сообщении
+    #         elif ACTION in message and message[ACTION] == MESSAGE and SENDER in message and DESTINATION in message \
+    #                 and MESSAGE_TEXT in message and message[DESTINATION] == self.username:
+    #             logger.debug(f'Получено сообщение от пользователя {message[SENDER]}:{message[MESSAGE_TEXT]}')
+    #             self.database_client.save_message(message[SENDER], 'in', message[MESSAGE_TEXT])
+    #             self.new_message.emit(message[SENDER])
 
     def create_exit_message(self):
         """Функция создаёт словарь с сообщением о выходе"""
@@ -139,8 +179,6 @@ class ClientTransport(threading.Thread, QObject):
                 'sock': self.sock.getsockname()
             },
         }
-
-
 
     def create_user_contacts_message(self):
         logger.debug('Сформировано запрос серверу на получение списка контактов')
@@ -156,144 +194,55 @@ class ClientTransport(threading.Thread, QObject):
         return data
 
     def add_user_contacts_message(self, contact_name):
-        contact_list = []
-        res = sorted(database.contacts_list(self.account_name))
-        for item in res:
-            if item.contact_name not in contact_list:
-                contact_list.append(item.contact_name)
-        if not contact_name:
-            contact_name = input('Введите имя контакта: ')
-            while True:
-                contact_is_register = sorted(database.user_list(contact_name))
-                if contact_name not in contact_list:
-                    if contact_is_register:
-                        data = {
-                            'action': 'add_contact',
-                            'time': time.time(),
-                            'user': {
-                                "account_name": self.account_name,
-                                "sock": self.sock.getsockname(),
-                            },
-                            'contact': contact_name
-                        }
-                        logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
-                                     f' {self.account_name}')
-                        self.database_client.add_contact(self.account_name, contact_name)
-                        return data
-                    print(f'Вы указали не зарегистрированного пользователя {contact_name}')
-                    contact_name = input('Введите имя контакта: ')
-                elif contact_name in contact_list:
-                    print('Данный пользователь уже в вашем списке контактов')
-                    break
-
-                else:
-                    print(f'Вы указали не зарегистрированного пользователя {contact_name}')
-                    break
+        data = {
+            'action': 'add_contact',
+            'time': time.time(),
+            'user': {
+                "account_name": self.account_name,
+                "sock": self.sock.getsockname(),
+            },
+            'contact': contact_name
+        }
+        logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
+                     f' {self.account_name}')
+        # self.database_client.add_contact(self.account_name, contact_name)
+        return data
 
     def del_user_contacts_message(self, contact_name):
-        contact_list = []
-        res = sorted(database.contacts_list(self.account_name))
-        for item in res:
-            if item.contact_name not in contact_list:
-                contact_list.append(item.contact_name)
-        if not contact_name:
-            contact_name = input('Введите имя контакта: ')
-            while True:
-                contact_is_register = sorted(database.user_list(contact_name))
-                if contact_name in contact_list:
-                    if contact_is_register:
-                        data = {
-                            'action': 'del_contact',
-                            'time': time.time(),
-                            'user': {
-                                "account_name": self.account_name,
-                                "sock": self.sock.getsockname(),
-                            },
-                            'contact': contact_name
-                        }
-                        logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователя'
-                                     f' {self.account_name}')
-                        self.database_client.del_contact(self.account_name, contact_name)
-                        return data
-                    else:
-                        print(f'Вы указали не зарегистрированного пользователя {contact_name}')
-                        contact_name = input('Введите имя контакта: ')
-                elif contact_name not in contact_list and contact_is_register:
-                    print('Данный пользователь не состоит в вашем списке контактов')
-                    break
-
-                else:
-                    print(f'Вы указали не зарегистрированного пользователя {contact_name}')
-                    contact_name = input('Введите имя контакта: ')
-    # Функция обновляющая контакт - лист с сервера
-    def contacts_list_update(self):
-        logger.debug(f'Запрос контакт листа для пользователся {self.name}')
-        req = {
-            ACTION: GET_CONTACTS,
-            TIME: time.time(),
-            USER: self.username
+        data = {
+            'action': 'del_contact',
+            'time': time.time(),
+            'user': {
+                "account_name": self.account_name,
+                "sock": self.sock.getsockname(),
+            },
+            'contact': contact_name
         }
-        logger.debug(f'Сформирован запрос {req}')
-        with socket_lock:
-            send_message(self.transport, req)
-            ans = get_message(self.transport)
-        logger.debug(f'Получен ответ {ans}')
-        if RESPONSE in ans and ans[RESPONSE] == 202:
-            for contact in ans[LIST_INFO]:
-                self.database.add_contact(contact)
-        else:
-            logger.error('Не удалось обновить список контактов.')
-
-    # Функция обновления таблицы известных пользователей.
-    def user_list_update(self):
-        logger.debug(f'Запрос списка известных пользователей {self.username}')
-        req = {
-            ACTION: USERS_REQUEST,
-            TIME: time.time(),
-            ACCOUNT_NAME: self.username
-        }
-        with socket_lock:
-            send_message(self.transport, req)
-            ans = get_message(self.transport)
-        if RESPONSE in ans and ans[RESPONSE] == 202:
-            self.database.add_users(ans[LIST_INFO])
-        else:
-            logger.error('Не удалось обновить список известных пользователей.')
+        logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователя'
+                     f' {self.account_name}')
+        self.database_client.del_contact(self.account_name, contact_name)
+        return data
 
     # Функция сообщающая на сервер о добавлении нового контакта
     def add_contact(self, contact):
         logger.debug(f'Создание контакта {contact}')
-        req = {
-            ACTION: ADD_CONTACT,
-            TIME: time.time(),
-            USER: self.username,
-            ACCOUNT_NAME: contact
-        }
+        req = self.add_user_contacts_message(contact)
         with socket_lock:
             send_message(self.transport, req)
-            self.process_server_ans(get_message(self.transport))
+            self.response_process()
 
     # Функция удаления клиента на сервере
     def remove_contact(self, contact):
         logger.debug(f'Удаление контакта {contact}')
-        req = {
-            ACTION: REMOVE_CONTACT,
-            TIME: time.time(),
-            USER: self.username,
-            ACCOUNT_NAME: contact
-        }
+        req = self.del_user_contacts_message(contact)
         with socket_lock:
             send_message(self.transport, req)
-            self.process_server_ans(get_message(self.transport))
+            self.response_process()
 
     # Функция закрытия соединения, отправляет сообщение о выходе.
     def transport_shutdown(self):
         self.running = False
-        message = {
-            ACTION: EXIT,
-            TIME: time.time(),
-            ACCOUNT_NAME: self.username
-        }
+        message = self.create_exit_message()
         with socket_lock:
             try:
                 send_message(self.transport, message)
@@ -304,19 +253,12 @@ class ClientTransport(threading.Thread, QObject):
 
     # Функция отправки сообщения на сервер
     def send_message(self, to, message):
-        message_dict = {
-            ACTION: MESSAGE,
-            SENDER: self.username,
-            DESTINATION: to,
-            TIME: time.time(),
-            MESSAGE_TEXT: message
-        }
-        logger.debug(f'Сформирован словарь сообщения: {message_dict}')
+        message_dict = self.create_message(to, message)
 
         # Необходимо дождаться освобождения сокета для отправки сообщения
         with socket_lock:
             send_message(self.transport, message_dict)
-            self.process_server_ans(get_message(self.transport))
+            self.response_process()
             logger.info(f'Отправлено сообщение для пользователя {to}')
 
     def run(self):
@@ -342,6 +284,6 @@ class ClientTransport(threading.Thread, QObject):
                 # Если сообщение получено, то вызываем функцию обработчик:
                 else:
                     logger.debug(f'Принято сообщение с сервера: {message}')
-                    self.process_server_ans(message)
+                    self.response_process()
                 finally:
                     self.transport.settimeout(5)

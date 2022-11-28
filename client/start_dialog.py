@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QDialog, QPushButton, QLineEdit, QApplication, QLabel , qApp
-from PyQt5.QtCore import QEvent
+from PyQt6.QtWidgets import QDialog, QPushButton, QLineEdit, QApplication, QLabel
+# from PyQt5.QtCore import QEvent
 
 
 # Стартовый диалог с выбором имени пользователя
@@ -26,7 +26,7 @@ class UserNameDialog(QDialog):
 
         self.btn_cancel = QPushButton('Выход', self)
         self.btn_cancel.move(90, 60)
-        self.btn_cancel.clicked.connect(qApp.exit)
+        self.btn_cancel.clicked.connect(exit)
 
         self.show()
 
@@ -34,10 +34,11 @@ class UserNameDialog(QDialog):
     def click(self):
         if self.client_name.text():
             self.ok_pressed = True
-            qApp.exit()
+            exit()
 
 
 if __name__ == '__main__':
     app = QApplication([])
     dial = UserNameDialog()
-    app.exec_()
+    app.exec()
+
