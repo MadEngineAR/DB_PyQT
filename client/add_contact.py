@@ -1,6 +1,4 @@
 import sys
-import logging
-
 sys.path.append('../')
 from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
 from PyQt6.QtCore import Qt
@@ -21,7 +19,7 @@ class AddContactDialog(QDialog):
 
         self.setFixedSize(350, 120)
         self.setWindowTitle('Выберите контакт для добавления:')
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setModal(True)
 
         self.selector_label = QLabel('Выберите контакт для добавления:', self)
@@ -54,12 +52,25 @@ class AddContactDialog(QDialog):
     def possible_contacts_update(self):
         self.selector.clear()
         # множества всех контактов и контактов клиента
-        contacts_list = set(self.database.get_contacts())
-        users_list = set(self.database.get_users())
+        contacts_list = set(self.database.contacts_list())
+        users_cont= set(self.database.user_list_client())
+        users_list = users_cont - contacts_list
+        # print(users_list)
         # Удалим сами себя из списка пользователей, чтобы нельзя было добавить самого себя
-        users_list.remove(self.transport.username)
+        # print(self.database.user_list_client(self.transport.account_name)[0])
+        try:
+            self.database.user_list_client(self.transport.account_name)[0]
+        except IndexError:
+            self.database.user_list_client()
+        user = self.database.user_list_client(self.transport.account_name)[0]
+        users_list.remove(user)
+        # print(users_list)
+        # print(users_list - contacts_list)
+        possible_contact_list = []
+        for item in users_list:
+            possible_contact_list.append(item[1])
         # Добавляем список возможных контактов
-        self.selector.addItems(users_list - contacts_list)
+        self.selector.addItems(possible_contact_list)
 
     # Обновлялка возможных контактов. Обновляет таблицу известных пользователей,
     # затем содержимое предполагаемых контактов

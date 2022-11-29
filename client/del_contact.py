@@ -45,4 +45,4 @@ if __name__ == '__main__':
     app = QApplication([])
     window = DelContactDialog(None)
     window.show()
-    app.exec_()
+    app.exec()

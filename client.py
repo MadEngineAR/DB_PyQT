@@ -10,7 +10,7 @@ from common.utils import get_message, send_message
 from logs.client_log_config import log
 from errors import IncorrectDataRecivedError, ReqFieldMissingError, ServerError
 from server import database
-from client.client_DB import ClientStorage
+from client_DB import ClientStorage
 
 logger = log
 

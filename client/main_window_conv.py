@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor, QAction
 
 class Ui_MainClientWindow(object):
     def setupUi(self, MainClientWindow):
@@ -57,11 +58,11 @@ class Ui_MainClientWindow(object):
         self.statusBar = QtWidgets.QStatusBar(MainClientWindow)
         self.statusBar.setObjectName("statusBar")
         MainClientWindow.setStatusBar(self.statusBar)
-        self.menu_exit = QtWidgets.QAction(MainClientWindow)
+        self.menu_exit = QAction(MainClientWindow)
         self.menu_exit.setObjectName("menu_exit")
-        self.menu_add_contact = QtWidgets.QAction(MainClientWindow)
+        self.menu_add_contact = QAction(MainClientWindow)
         self.menu_add_contact.setObjectName("menu_add_contact")
-        self.menu_del_contact = QtWidgets.QAction(MainClientWindow)
+        self.menu_del_contact = QAction(MainClientWindow)
         self.menu_del_contact.setObjectName("menu_del_contact")
         self.menu.addAction(self.menu_exit)
         self.menu_2.addAction(self.menu_add_contact)

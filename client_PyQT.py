@@ -1,14 +1,10 @@
-import logging
-import logs.client_log_config
-import argparse
 import sys
 from PyQt6.QtWidgets import QApplication
-from client.client_DB import ClientStorage
+from client_DB import ClientStorage
 from common.variables import *
 from errors import ServerError
 from client.transport import ClientTransport
 from client.main_window import ClientMainWindow
-from client.start_dialog import UserNameDialog
 from logs.client_log_config import log
 
 # Инициализация клиентского логера
@@ -38,10 +34,11 @@ if __name__ == '__main__':
 
     # Если имя пользователя не было указано в командной строке то запросим его
     if not client_name:
-        client_name = input('fdfdf')
+        client_name = input('Input username:  ')
         # start_dialog = UserNameDialog()
+        # start_dialog.setModal(True)
         # start_dialog.exec()
-        # Если пользователь ввёл имя и нажал ОК, то сохраняем ведённое и удаляем объект, иначе выходим
+        # # Если пользователь ввёл имя и нажал ОК, то сохраняем ведённое и удаляем объект, иначе выходим
         # if start_dialog.ok_pressed:
         #     client_name = start_dialog.client_name.text()
         #     del start_dialog
@@ -68,8 +65,9 @@ if __name__ == '__main__':
     transport.start()
 
     # Создаём GUI
-    main_window = ClientMainWindow(database_client, transport)
+    main_window = ClientMainWindow(database_client, transport, client_name)
     main_window.make_connection(transport)
+    main_window.clients_list_update()
     main_window.setWindowTitle(f'Чат Программа alpha release - {client_name}')
     client_app.exec()
 

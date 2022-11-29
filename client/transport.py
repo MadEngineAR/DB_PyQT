@@ -35,6 +35,9 @@ class ClientTransport(threading.Thread, QObject):
         self.connection_init(port, ip_address)
         # Обновляем таблицы известных пользователей и контактов
         try:
+            check = self.database_client.check_user(self.account_name)
+            if not check:
+                database_client.load_users_from_server(self.account_name)
             self.database_client.user_list_client()
             self.database_client.contacts_list()
         except OSError as err:
@@ -66,6 +69,7 @@ class ClientTransport(threading.Thread, QObject):
                 pass
             else:
                 connected = True
+
                 break
             time.sleep(1)
 
@@ -80,6 +84,7 @@ class ClientTransport(threading.Thread, QObject):
         try:
             with socket_lock:
                 send_message(self.transport, self.make_presence(self.transport, self.account_name))
+
                 self.response_process()
         except (OSError, json.JSONDecodeError):
             logger.critical('Потеряно соединение с сервером!')
@@ -176,7 +181,7 @@ class ClientTransport(threading.Thread, QObject):
             'time': time.time(),
             'user': {
                 'account_name': self.account_name,
-                'sock': self.sock.getsockname()
+                'sock': self.transport.getsockname()
             },
         }
 
@@ -188,7 +193,7 @@ class ClientTransport(threading.Thread, QObject):
             'time': time.time(),
             'user': {
                 "account_name": self.account_name,
-                "sock": self.sock.getsockname(),
+                "sock": self.transport.getsockname(),
             }
         }
         return data
@@ -199,7 +204,7 @@ class ClientTransport(threading.Thread, QObject):
             'time': time.time(),
             'user': {
                 "account_name": self.account_name,
-                "sock": self.sock.getsockname(),
+                "sock": self.transport.getsockname(),
             },
             'contact': contact_name
         }
@@ -214,7 +219,7 @@ class ClientTransport(threading.Thread, QObject):
             'time': time.time(),
             'user': {
                 "account_name": self.account_name,
-                "sock": self.sock.getsockname(),
+                "sock": self.transport.getsockname(),
             },
             'contact': contact_name
         }
@@ -224,12 +229,17 @@ class ClientTransport(threading.Thread, QObject):
         return data
 
     # Функция сообщающая на сервер о добавлении нового контакта
-    def add_contact(self, contact):
-        logger.debug(f'Создание контакта {contact}')
-        req = self.add_user_contacts_message(contact)
+    def add_contact_transport(self, contact_name):
+        logger.debug(f'Создание контакта {contact_name}')
+        req = self.add_user_contacts_message(contact_name)
+        logger.debug(f'Сформировано запрос серверу на добавление контакта {contact_name} пользователю'
+                     f' {self.account_name}')
         with socket_lock:
             send_message(self.transport, req)
+            message = get_message(self.transport)
             self.response_process()
+            if message['response'] == 205:
+                self.database_client.add_contact(contact_name)
 
     # Функция удаления клиента на сервере
     def remove_contact(self, contact):

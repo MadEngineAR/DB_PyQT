@@ -48,7 +48,7 @@ class ClientStorage:
             self.contact_name = contact_name
 
     def __init__(self, name):
-        self.database_engine = create_engine(f'sqlite:///client_{name}.db', echo=False, pool_recycle=7200,
+        self.database_engine = create_engine(f'sqlite:///client/client_{name}.db', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
         global client_name
         client_name = name
@@ -105,7 +105,7 @@ class ClientStorage:
         return query.all()
 
     def load_users_from_client(self):
-        users = self.user_list_client(client_name)
+        users = self.user_list_client()
         return users
 
     """
@@ -113,14 +113,25 @@ class ClientStorage:
     и если клиент уже зарегистрирован, программа клиент ничего не знает о доступных пользователях.
     """
 
-    def load_users_from_server(self):
-        users = sorted(self.server_database.user_list())
-        for item in users:
-            user = self.AllUsersClient(item.username, item.ip_address, item.port, item.sender_count,
+    def load_users_from_server(self, username=None):
+        if username:
+            item = self.server_database.user_list(username)[0]
+            item = self.AllUsersClient(item.username, item.ip_address, item.port, item.sender_count,
                                        item.recepient_count)
-            self.session.add(user)
+            self.session.add(item)
             self.session.commit()
-        self.session.commit()
+            return item
+        else:
+            users = sorted(self.server_database.user_list())
+            for item in users:
+                user = self.AllUsersClient(item.username, item.ip_address, item.port, item.sender_count,
+                                           item.recepient_count)
+                self.session.add(user)
+                self.session.commit()
+
+
+            return users
+
 
     def get_contact(self):
         query = self.session.query(
@@ -152,7 +163,8 @@ class ClientStorage:
         # print(res)
         if not res.count():
             try:
-                username = self.session.query(self.AllUsersClient).filter_by(username=client_name)
+                query = self.session.query(self.AllUsersClient).filter_by(username=client_name)
+                username = query.first().username
             except Exception:
                 username = ''
             contacts = self.UsersContactsList(username, contact_name)
@@ -191,22 +203,24 @@ class ClientStorage:
         self.session.commit()
 
     def get_history(self, from_user=None, to_user=None):
-        query = self.session.query(self.MessageHistory).filter_by(from_user=from_user)
-        query_to = self.session.query(self.MessageHistory).filter_by(to_user=to_user)
+        query = self.session.query(self.MessageHistory).filter_by(from_user=from_user, to_user=to_user)
+        query_to = self.session.query(self.MessageHistory).filter_by(from_user=to_user, to_user=from_user)
         history = []
         if query.count():
             if from_user:
                 history = [(history_row.from_user, history_row.to_user, history_row.message, history_row.date)
                            for history_row in query.all()]
             if to_user:
-                history_to = [
+                history.extend([
                     (history_row.from_user, history_row.to_user, history_row.message, history_row.date)
-                    for history_row in query_to.all()]
-                return [history, history_to]
+                    for history_row in query_to.all()])
+
+                return history
         else:
             self.load_history_server_DB()
 
     def init(self):
+        # print(self.load_users_from_client())
         # Если нет известных пользователей, значит и базы не было, подгружаем с сервера
         if not self.load_users_from_client():
             self.load_users_from_server()
