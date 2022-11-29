@@ -75,6 +75,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         super().__init__()
 
     def process_client_message(self, message):
+        print(message)
         global users
         # print(message)
         logger.debug(f'Получено сообщение от клиента {message}')
@@ -86,6 +87,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                 users.append(message[USER])
             self.database.user_login(message[USER][ACCOUNT_NAME], message['user']['sock'][0],
                                      int(message['user']['sock'][1]))
+            print(users)
             return {
                 RESPONSE: 200,
                 'data': None,
@@ -180,7 +182,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
             try:
                 client, client_address = s.accept()
             except OSError as e:
-                # print(e.errno)
+                print(e.errno)
                 pass
             else:
                 self.clients.append(client)
@@ -266,7 +268,7 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                                     message['action'] == 'message':
                                 try:
                                     response = self.process_client_message(message)
-                                    # print(response)
+                                    print(response)
                                     if len(response['sock_address']) == 0 \
                                             and s_listener.getpeername() == tuple(message['user']['sock']):
                                         response['data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
@@ -274,6 +276,8 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                                         send_message(s_listener, response)
                                     elif s_listener.getpeername() == tuple(response['sock_address']):
                                         send_message(s_listener, response)
+
+                                        print(response)
                                         self.database.contact(message[USER][ACCOUNT_NAME], message['to'],
                                                               datetime.datetime.now(), message['message_text'])
                                         # contacts = self.ClientContacts(user.id, contact_name, contact_time, message,

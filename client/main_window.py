@@ -74,7 +74,10 @@ class ClientMainWindow(QMainWindow):
         # res_1 = self.database_client.get_history(self.client_name,self.current_chat)
         # res = sorted(self.database_client.get_history(self.client_name,self.current_chat))
         # print(res)
-        hist_list = sorted(self.database_client.get_history(self.client_name, self.current_chat), key=lambda item: item[3])
+        try:
+            hist_list = sorted(self.database_client.get_history(self.client_name, self.current_chat), key=lambda item: item[3])
+        except TypeError:
+            hist_list = []
         # Если модель не создана, создадим.
         if not self.history_model:
             self.history_model = QStandardItemModel()
@@ -82,7 +85,7 @@ class ClientMainWindow(QMainWindow):
         # Очистим от старых записей
         self.history_model.clear()
         # Берём не более 20 последних записей.
-        length = len(list)
+        length = len(hist_list)
         start_index = 0
         if length > 20:
             start_index = length - 20
@@ -90,18 +93,19 @@ class ClientMainWindow(QMainWindow):
         # Записи в обратном порядке, поэтому выбираем их с конца и не более 20
         for i in range(start_index, length):
             item = hist_list[i]
-            if item[1] == 'in':
-                mess = QStandardItem(f'Входящее от {item[3].replace(microsecond=0)}:\n {item[2]}')
+            if item[1] != self.client_name:
+                mess = QStandardItem(f'Входящее от {item[1]}:\n {item[2]}')
                 mess.setEditable(False)
-                mess.setBackground(QBrush(QColor(255, 213, 213)))
-                mess.setTextAlignment(Qt.AlignLeft)
+                mess.setBackground(QBrush(QColor(255, 0, 0, 127)))
+                mess.setTextAlignment(Qt.AlignmentFlag.AlignLeft)
                 self.history_model.appendRow(mess)
             else:
-                mess = QStandardItem(f'Исходящее от {item[3].replace(microsecond=0)}:\n {item[2]}')
+                mess = QStandardItem(f'Исходящее от {item[1]}:\n {item[2]}')
                 mess.setEditable(False)
-                mess.setTextAlignment(Qt.AlignRight)
-                mess.setBackground(QBrush(QColor(204, 255, 204)))
+                mess.setTextAlignment(Qt.AlignmentFlag.AlignRight)
+                mess.setBackground(QBrush(QColor(300, 0, 0, 127)))
                 self.history_model.appendRow(mess)
+        self.ui.list_messages.setModel(self.history_model)
         self.ui.list_messages.scrollToBottom()
 
     # Функция обработчик даблклика по контакту
@@ -215,7 +219,7 @@ class ClientMainWindow(QMainWindow):
             self.messages.critical(self, 'Ошибка', 'Потеряно соединение с сервером!')
             self.close()
         else:
-            self.database_client.save_message(self.current_chat, 'out', message_text)
+            # self.database_client.save_message(self.current_chat, message_text)
             logger.debug(f'Отправлено сообщение для {self.current_chat}: {message_text}')
             self.history_list_update()
 
@@ -228,7 +232,7 @@ class ClientMainWindow(QMainWindow):
             # Проверим есть ли такой пользователь у нас в контактах:
             if self.database_client.check_contact(sender):
                 # Если есть, спрашиваем и желании открыть с ним чат и открываем при желании
-                if self.messages.question(self, 'Новое сообщение', \
+                if self.messages.question(self, 'Новое сообщение',
                                           f'Получено новое сообщение от {sender}, открыть чат с ним?', QMessageBox.Yes,
                                           QMessageBox.No) == QMessageBox.Yes:
                     self.current_chat = sender

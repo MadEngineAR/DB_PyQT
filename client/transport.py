@@ -30,7 +30,7 @@ class ClientTransport(threading.Thread, QObject):
         self.account_name = account_name
         # Сокет для работы с сервером
         self.transport = None
-        self.sock = self.transport
+        # self.sock = self.transport
         # Устанавливаем соединение:
         self.connection_init(port, ip_address)
         # Обновляем таблицы известных пользователей и контактов
@@ -120,9 +120,11 @@ class ClientTransport(threading.Thread, QObject):
                     print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
                     if message['data'] == f'Вы отправили сообщение не существующему либо отключенному ' \
                                           f'адресату {message["to"]}':
+                        print(message['data'])
                         pass
                     else:
                         self.database_client.save_message(message["login"], self.account_name, message["data"])
+                        print('111')
                         self.new_message.emit(message['login'])
                 if message['response'] == 202:
                     print(f'\n {message}')
@@ -146,7 +148,7 @@ class ClientTransport(threading.Thread, QObject):
             'time': time.time(),
             'user': {
                 'account_name': self.account_name,
-                'sock': self.sock.getsockname(),
+                'sock': self.transport.getsockname(),
             },
             'to': to,
             'message_text': message
@@ -268,7 +270,9 @@ class ClientTransport(threading.Thread, QObject):
         # Необходимо дождаться освобождения сокета для отправки сообщения
         with socket_lock:
             send_message(self.transport, message_dict)
-            self.response_process()
+            print(f'Послано сообщение {message_dict}')
+            # self.response_process()
+            # print(self.response_process())
             logger.info(f'Отправлено сообщение для пользователя {to}')
 
     def run(self):
@@ -281,6 +285,10 @@ class ClientTransport(threading.Thread, QObject):
                 try:
                     self.transport.settimeout(0.5)
                     message = get_message(self.transport)
+                    print(f'принято сообщение {message}')
+                    self.database_client.save_message(message["login"], self.account_name, message["data"])
+                    print('111')
+                    self.new_message.emit(message['login'])
                 except OSError as err:
                     if err.errno:
                         logger.critical(f'Потеряно соединение с сервером.')
@@ -294,6 +302,6 @@ class ClientTransport(threading.Thread, QObject):
                 # Если сообщение получено, то вызываем функцию обработчик:
                 else:
                     logger.debug(f'Принято сообщение с сервера: {message}')
-                    self.response_process()
+                    # self.response_process()
                 finally:
                     self.transport.settimeout(5)

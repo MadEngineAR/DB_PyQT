@@ -129,9 +129,7 @@ class ClientStorage:
                 self.session.add(user)
                 self.session.commit()
 
-
             return users
-
 
     def get_contact(self):
         query = self.session.query(
