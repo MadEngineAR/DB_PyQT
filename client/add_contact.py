@@ -52,24 +52,22 @@ class AddContactDialog(QDialog):
     def possible_contacts_update(self):
         self.selector.clear()
         # множества всех контактов и контактов клиента
-        contacts_list = set(self.database.contacts_list())
+        contacts_list = self.database.contacts_list(self.transport.account_name)
         users_cont= set(self.database.user_list_client())
-        users_list = users_cont - contacts_list
-        # print(users_list)
+        possible_contacts_set = users_cont.difference(contacts_list)
         # Удалим сами себя из списка пользователей, чтобы нельзя было добавить самого себя
-        # print(self.database.user_list_client(self.transport.account_name)[0])
         try:
             self.database.user_list_client(self.transport.account_name)[0]
         except IndexError:
             self.database.user_list_client()
         user = self.database.user_list_client(self.transport.account_name)[0]
-        users_list.remove(user)
-        # print(users_list)
-        # print(users_list - contacts_list)
+        possible_contacts_set.remove(user)
+
         possible_contact_list = []
-        for item in users_list:
-            possible_contact_list.append(item[1])
+
         # Добавляем список возможных контактов
+        for item in possible_contacts_set:
+            possible_contact_list.append(item[1])
         self.selector.addItems(possible_contact_list)
 
     # Обновлялка возможных контактов. Обновляет таблицу известных пользователей,

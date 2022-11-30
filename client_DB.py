@@ -101,7 +101,12 @@ class ClientStorage:
 
         )
         if username:
-            query = query.filter(self.AllUsersClient.username == username)
+            contacts = set()
+            users = self.user_list_client()
+            for item in query:
+                cont_obj = [obj for obj in users if obj[1] == item[1]][0]
+                contacts.add(cont_obj)
+            return contacts
         return query.all()
 
     def load_users_from_client(self):
@@ -190,13 +195,13 @@ class ClientStorage:
         self.session.commit()
         return res, res_to
 
-    def save_message(self, to_user, message):
+    def save_message(self, from_user,to_user, message):
         date = datetime.datetime.now()
-        try:
-            username = self.session.query(self.AllUsersClient).filter_by(username=client_name)
-        except Exception:
-            username = ''
-        message_row = self.MessageHistory(username, to_user, message, date)
+        print(f'from_user - {from_user}')
+        print(f'to_user  {to_user}')
+        print(f'message {message}')
+        print(f'date {date}')
+        message_row = self.MessageHistory(from_user, to_user, message, date)
         self.session.add(message_row)
         self.session.commit()
 

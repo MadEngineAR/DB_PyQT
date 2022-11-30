@@ -35,16 +35,6 @@ if __name__ == '__main__':
     # Если имя пользователя не было указано в командной строке то запросим его
     if not client_name:
         client_name = input('Input username:  ')
-        # start_dialog = UserNameDialog()
-        # start_dialog.setModal(True)
-        # start_dialog.exec()
-        # # Если пользователь ввёл имя и нажал ОК, то сохраняем ведённое и удаляем объект, иначе выходим
-        # if start_dialog.ok_pressed:
-        #     client_name = start_dialog.client_name.text()
-        #     del start_dialog
-        # else:
-        #     exit(0)
-
     # Записываем логи
     logger.info(
         f'Запущен клиент с парамертами: адрес сервера: {server_address} , порт: {server_port},'

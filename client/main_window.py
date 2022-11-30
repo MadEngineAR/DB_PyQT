@@ -4,6 +4,8 @@ from PyQt6.QtCore import pyqtSlot, Qt
 import sys
 import logging
 
+from client.start_dialog import UserNameDialog
+
 sys.path.append('../')
 from client.main_window_conv import Ui_MainClientWindow
 from client.add_contact import AddContactDialog
@@ -75,7 +77,8 @@ class ClientMainWindow(QMainWindow):
         # res = sorted(self.database_client.get_history(self.client_name,self.current_chat))
         # print(res)
         try:
-            hist_list = sorted(self.database_client.get_history(self.client_name, self.current_chat), key=lambda item: item[3])
+            hist_list = sorted(self.database_client.get_history(self.client_name, self.current_chat),
+                               key=lambda item: item[3])
         except TypeError:
             hist_list = []
         # Если модель не создана, создадим.
@@ -93,14 +96,14 @@ class ClientMainWindow(QMainWindow):
         # Записи в обратном порядке, поэтому выбираем их с конца и не более 20
         for i in range(start_index, length):
             item = hist_list[i]
-            if item[1] != self.client_name:
-                mess = QStandardItem(f'Входящее от {item[1]}:\n {item[2]}')
+            if item[1] == self.client_name:
+                mess = QStandardItem(f'Входящее от {item[0]}:\n {item[2]}')
                 mess.setEditable(False)
                 mess.setBackground(QBrush(QColor(255, 0, 0, 127)))
                 mess.setTextAlignment(Qt.AlignmentFlag.AlignLeft)
                 self.history_model.appendRow(mess)
             else:
-                mess = QStandardItem(f'Исходящее от {item[1]}:\n {item[2]}')
+                mess = QStandardItem(f'Исходящее от {item[0]}:\n {item[2]}')
                 mess.setEditable(False)
                 mess.setTextAlignment(Qt.AlignmentFlag.AlignRight)
                 mess.setBackground(QBrush(QColor(300, 0, 0, 127)))
@@ -188,7 +191,7 @@ class ClientMainWindow(QMainWindow):
                 self.close()
             self.messages.critical(self, 'Ошибка', 'Таймаут соединения!')
         else:
-            self.database_client.del_contact(selected)
+            # self.database_client.del_contact(selected)
             self.clients_list_update()
             logger.info(f'Успешно удалён контакт {selected}')
             self.messages.information(self, 'Успех', 'Контакт успешно удалён.')
@@ -233,17 +236,18 @@ class ClientMainWindow(QMainWindow):
             if self.database_client.check_contact(sender):
                 # Если есть, спрашиваем и желании открыть с ним чат и открываем при желании
                 if self.messages.question(self, 'Новое сообщение',
-                                          f'Получено новое сообщение от {sender}, открыть чат с ним?', QMessageBox.Yes,
-                                          QMessageBox.No) == QMessageBox.Yes:
+                                          f'Получено новое сообщение от {sender}, открыть чат с ним?',
+                                          QMessageBox.StandardButton.Yes,
+                                          QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
                     self.current_chat = sender
                     self.set_active_user()
             else:
                 print('NO')
                 # Раз нет, спрашиваем хотим ли добавить юзера в контакты.
-                if self.messages.question(self, 'Новое сообщение', \
+                if self.messages.question(self, 'Новое сообщение',
                                           f'Получено новое сообщение от {sender}.\n Данного пользователя нет в вашем контакт-листе.\n Добавить в контакты и открыть чат с ним?',
-                                          QMessageBox.Yes,
-                                          QMessageBox.No) == QMessageBox.Yes:
+                                          QMessageBox.StandardButton.Yes,
+                                          QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
                     self.add_contact(sender)
                     self.current_chat = sender
                     self.set_active_user()
@@ -258,4 +262,6 @@ class ClientMainWindow(QMainWindow):
     def make_connection(self, trans_obj):
         trans_obj.new_message.connect(self.message)
         trans_obj.connection_lost.connect(self.connection_lost)
+
+
 

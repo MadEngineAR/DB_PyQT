@@ -84,8 +84,8 @@ class ClientTransport(threading.Thread, QObject):
         try:
             with socket_lock:
                 send_message(self.transport, self.make_presence(self.transport, self.account_name))
-
-                self.response_process()
+                message = get_message(self.transport)
+                self.response_process(message)
         except (OSError, json.JSONDecodeError):
             logger.critical('Потеряно соединение с сервером!')
             raise ServerError('Потеряно соединение с сервером!')
@@ -111,9 +111,7 @@ class ClientTransport(threading.Thread, QObject):
         }
         return data
 
-    def response_process(self):
-        try:
-            message = get_message(self.transport)
+    def response_process(self,message):
             if 'response' in message:
                 # print(message['response'])
                 if message['response'] == 200 and message['data']:
@@ -126,6 +124,7 @@ class ClientTransport(threading.Thread, QObject):
                         self.database_client.save_message(message["login"], self.account_name, message["data"])
                         print('111')
                         self.new_message.emit(message['login'])
+                        print('2222')
                 if message['response'] == 202:
                     print(f'\n {message}')
                 if message['response'] == 205:
@@ -135,12 +134,7 @@ class ClientTransport(threading.Thread, QObject):
 
                 logger.info('Bad request 400')
             logger.info('Ошибка чтения данных')
-        except (IncorrectDataRecivedError, ValueError):
-            logger.error(f'Не удалось декодировать полученное сообщение.')
-        except (OSError, ConnectionError, ConnectionAbortedError,
-                ConnectionResetError, json.JSONDecodeError):
-            logger.critical(f'Потеряно соединение с сервером.')
-            print('Потеряно соединение с сервером.')
+
 
     def create_message(self, to, message):
         message_dict = {
@@ -227,7 +221,7 @@ class ClientTransport(threading.Thread, QObject):
         }
         logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователя'
                      f' {self.account_name}')
-        self.database_client.del_contact(self.account_name, contact_name)
+
         return data
 
     # Функция сообщающая на сервер о добавлении нового контакта
@@ -239,17 +233,27 @@ class ClientTransport(threading.Thread, QObject):
         with socket_lock:
             send_message(self.transport, req)
             message = get_message(self.transport)
-            self.response_process()
+            self.response_process(message)
             if message['response'] == 205:
                 self.database_client.add_contact(contact_name)
 
     # Функция удаления клиента на сервере
-    def remove_contact(self, contact):
-        logger.debug(f'Удаление контакта {contact}')
-        req = self.del_user_contacts_message(contact)
+    def remove_contact(self, contact_name):
+        logger.debug(f'Удаление контакта {contact_name}')
+        req = self.del_user_contacts_message(contact_name)
+        logger.debug(f'Сформировано запрос серверу на удаление контакта {contact_name} пользователю'
+                     f' {self.account_name}')
         with socket_lock:
             send_message(self.transport, req)
-            self.response_process()
+            message = get_message(self.transport)
+            self.response_process(message)
+            if message['response'] == 210:
+                self.database_client.del_contact(contact_name)
+        # logger.debug(f'Удаление контакта {contact}')
+        # req = self.del_user_contacts_message(contact)
+        # with socket_lock:
+        #     send_message(self.transport, req)
+        #     self.response_process()
 
     # Функция закрытия соединения, отправляет сообщение о выходе.
     def transport_shutdown(self):
@@ -270,6 +274,8 @@ class ClientTransport(threading.Thread, QObject):
         # Необходимо дождаться освобождения сокета для отправки сообщения
         with socket_lock:
             send_message(self.transport, message_dict)
+            print(message_dict)
+            self.database_client.save_message(message_dict['user']['account_name'], message_dict['to'], message_dict['message_text'])
             print(f'Послано сообщение {message_dict}')
             # self.response_process()
             # print(self.response_process())
@@ -283,23 +289,38 @@ class ClientTransport(threading.Thread, QObject):
             time.sleep(1)
             with socket_lock:
                 try:
-                    self.transport.settimeout(0.5)
+                    self.transport.settimeout(1)
                     message = get_message(self.transport)
                     print(f'принято сообщение {message}')
-                    self.database_client.save_message(message["login"], self.account_name, message["data"])
-                    print('111')
-                    self.new_message.emit(message['login'])
+                    if 'response' in message:
+                        # print(message['response'])
+                        if message['response'] == 200 and message['data']:
+                            print(f'\nПолучено сообщение от клиента {message["login"]}\n {message["data"]}')
+                            if message['data'] == f'Вы отправили сообщение не существующему либо отключенному ' \
+                                                  f'адресату {message["to"]}':
+                                continue
+                            else:
+                                self.database_client.save_message(message['login'],message["to"], message["data"])
+                                self.new_message.emit(message['login'])
+                        if message['response'] == 202:
+                            print(f'\n {message}')
+                        if message['response'] == 205:
+                            print(f'\n {message}')
+                        if message['response'] == 210:
+                            print(f'\n {message}')
+                        logger.info('Bad request 400')
+                    logger.info('Ошибка чтения данных')
                 except OSError as err:
                     if err.errno:
                         logger.critical(f'Потеряно соединение с сервером.')
                         self.running = False
                         self.connection_lost.emit()
-                # Проблемы с соединением
+                    # Проблемы с соединением
                 except (ConnectionError, ConnectionAbortedError, ConnectionResetError, json.JSONDecodeError, TypeError):
                     logger.debug(f'Потеряно соединение с сервером.')
                     self.running = False
                     self.connection_lost.emit()
-                # Если сообщение получено, то вызываем функцию обработчик:
+                    # Если сообщение получено, то вызываем функцию обработчик:
                 else:
                     logger.debug(f'Принято сообщение с сервера: {message}')
                     # self.response_process()
