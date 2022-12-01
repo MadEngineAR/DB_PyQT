@@ -12,18 +12,25 @@
     id_клиента.
 
 """
+import os
 from pprint import pprint
 import sqlalchemy
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Boolean, Text
 from sqlalchemy.orm import mapper, sessionmaker
 import datetime
-from server import database
+from server_DB import ServerStorage
 
 global client_name
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+database_server = ServerStorage(
+    os.path.join(
+        dir_path,
+        'server_database'))
+
 
 class ClientStorage:
-    server_database = database
+    server_database = database_server
 
     class AllUsersClient:
         def __init__(self, username, ip_address, port, sender_count, recepient_count):
@@ -195,7 +202,7 @@ class ClientStorage:
         self.session.commit()
         return res, res_to
 
-    def save_message(self, from_user,to_user, message):
+    def save_message(self, from_user, to_user, message):
         date = datetime.datetime.now()
         print(f'from_user - {from_user}')
         print(f'to_user  {to_user}')

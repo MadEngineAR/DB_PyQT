@@ -48,9 +48,13 @@ class ServerStorage:
             self.recep_count = recep_count
             self.is_friend = is_friend
 
-    def __init__(self):
-        self.database_engine = create_engine('sqlite:///server_database_console.db', echo=False, pool_recycle=7200,
-                                             connect_args={'check_same_thread': False})
+    def __init__(self, path):
+        self.database_engine = create_engine(
+            f'sqlite:///{path}',
+            echo=False,
+            pool_recycle=7200,
+            connect_args={
+                'check_same_thread': False})
         self.metadata = MetaData()
         # Создание таблицы пользователей
 
@@ -82,7 +86,7 @@ class ServerStorage:
                                Column('recep_count', Integer),
                                Column('is_friend', Boolean)
                                )
-        # Создаем  таблицы
+        # Создаем таблицы
         self.metadata.create_all(self.database_engine)
         mapper(self.AllUsers, users_table)
         mapper(self.ClientHistory, login_history)

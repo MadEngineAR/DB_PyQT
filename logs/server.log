@@ -1,23 +1,423 @@
-2022-11-28 20:06:16,534 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 20:23:49,571 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 20:59:14,752 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 21:00:21,499 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 21:13:05,708 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 21:25:39,446 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 21:26:25,055 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 21:29:31,091 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 21:42:10,045 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 22:09:10,425 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 22:22:10,905 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 22:35:04,968 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 22:38:17,456 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 22:43:28,064 - INFO     - Клиент ('127.0.0.1', 62169) отключился от сервера. 
-2022-11-28 22:44:58,148 - INFO     - PORT : 7777 ,IP_ADDRESS  
-2022-11-28 22:45:11,770 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 62170)>,), {}) 
-2022-11-28 22:45:11,770 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
-2022-11-28 22:45:11,770 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669657509.7645178, 'type': 'status', 'user': {'account_name': '1', 'sock': ['127.0.0.1', 62170]}} 
-2022-11-28 22:45:11,770 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
-2022-11-28 22:45:11,787 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669657509.7645178, 'type': 'status', 'user': {'account_name': '1', 'sock': ['127.0.0.1', 62170]}} 
-2022-11-28 22:45:11,787 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
-2022-11-28 22:45:11,792 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777)>, {'response': 200, 'data': None, 'login': '1', 'sock': ['127.0.0.1', 62170]}), {}) 
-2022-11-28 22:45:11,792 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 19:39:45,554 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 19:54:53,214 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 19:55:49,084 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 19:59:39,856 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63419)>,), {}) 
+2022-12-01 19:59:39,856 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 19:59:39,856 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669906779.825053, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63419]}} 
+2022-12-01 19:59:39,856 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 19:59:39,871 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669906779.825053, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63419]}} 
+2022-12-01 19:59:39,871 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 19:59:39,878 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63419)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63419]}), {}) 
+2022-12-01 19:59:39,878 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:00:24,908 - DEBUG    - server: get_message((<socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63420)>,), {}) 
+2022-12-01 20:00:24,908 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:00:24,908 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669906824.907393, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63420]}} 
+2022-12-01 20:00:24,908 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:00:24,919 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669906824.907393, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63420]}} 
+2022-12-01 20:00:24,919 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:00:24,924 - DEBUG    - server: send_message((<socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63420)>, {'response': 200, 'data': None, 'login': 'Ludmila', 'sock': ['127.0.0.1', 63420]}), {}) 
+2022-12-01 20:00:24,924 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:00:30,928 - DEBUG    - server: get_message((<socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63420)>,), {}) 
+2022-12-01 20:00:30,928 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:00:30,928 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669906828.558358, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63420]}, 'contact': 'Ruslan'} 
+2022-12-01 20:00:30,928 - INFO     - Клиент ('127.0.0.1', 63420) отключился от сервера. 
+2022-12-01 20:03:52,380 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:04:02,930 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63423)>,), {}) 
+2022-12-01 20:04:02,931 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:04:02,931 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907040.925886, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63423]}} 
+2022-12-01 20:04:02,931 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:04:02,945 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907040.925886, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63423]}} 
+2022-12-01 20:04:02,945 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:04:02,949 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63423)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63423]}), {}) 
+2022-12-01 20:04:02,949 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:04:19,212 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63424)>,), {}) 
+2022-12-01 20:04:19,212 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:04:19,212 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907057.2101219, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63424]}} 
+2022-12-01 20:04:19,213 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:04:19,221 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907057.2101219, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63424]}} 
+2022-12-01 20:04:19,221 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:04:19,225 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63424)>, {'response': 200, 'data': None, 'login': 'Ludmila', 'sock': ['127.0.0.1', 63424]}), {}) 
+2022-12-01 20:04:19,225 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:04:25,230 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63424)>,), {}) 
+2022-12-01 20:04:25,230 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:04:25,231 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669907063.037302, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63424]}, 'contact': 'Ruslan'} 
+2022-12-01 20:04:25,231 - INFO     - Клиент ('127.0.0.1', 63424) отключился от сервера. 
+2022-12-01 20:06:40,346 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:07:06,903 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63432)>,), {}) 
+2022-12-01 20:07:07,141 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:07:10,171 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907214.2891572, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63432]}} 
+2022-12-01 20:07:10,172 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:07:15,923 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907214.2891572, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63432]}} 
+2022-12-01 20:07:15,923 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:07:16,494 - DEBUG    - server: send_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63432)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63432]}), {}) 
+2022-12-01 20:07:16,495 - INFO     - Функция send_message вызвана из функции _bootstrap 
+2022-12-01 20:10:38,933 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:10:52,730 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63433)>,), {}) 
+2022-12-01 20:10:52,731 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:10:52,731 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907450.72496, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63433]}} 
+2022-12-01 20:10:52,731 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:10:52,747 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907450.72496, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63433]}} 
+2022-12-01 20:10:52,747 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:10:52,751 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63433)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63433]}), {}) 
+2022-12-01 20:10:52,751 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:11:18,765 - INFO     - Клиент ('127.0.0.1', 63433) отключился от сервера. 
+2022-12-01 20:11:36,341 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63434)>,), {}) 
+2022-12-01 20:11:36,341 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:11:36,341 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907494.33918, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63434]}} 
+2022-12-01 20:11:36,341 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:11:36,349 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907494.33918, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63434]}} 
+2022-12-01 20:11:36,349 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:11:36,354 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63434)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63434]}), {}) 
+2022-12-01 20:11:36,354 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:11:56,526 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63435)>,), {}) 
+2022-12-01 20:11:56,526 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:11:56,526 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907514.524085, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63435]}} 
+2022-12-01 20:11:56,526 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:11:56,535 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907514.524085, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63435]}} 
+2022-12-01 20:11:56,535 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:11:56,539 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63435)>, {'response': 200, 'data': None, 'login': 'Ludmila', 'sock': ['127.0.0.1', 63435]}), {}) 
+2022-12-01 20:11:56,539 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:12:04,544 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63435)>,), {}) 
+2022-12-01 20:12:04,545 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:12:04,545 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669907522.0681999, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63435]}, 'contact': 'Ruslan'} 
+2022-12-01 20:12:04,545 - INFO     - Клиент ('127.0.0.1', 63435) отключился от сервера. 
+2022-12-01 20:14:15,541 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:14:26,507 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63442)>,), {}) 
+2022-12-01 20:14:26,507 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:14:26,508 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907664.503663, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63442]}} 
+2022-12-01 20:14:26,508 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:14:26,521 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907664.503663, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63442]}} 
+2022-12-01 20:14:26,521 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:14:26,525 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63442)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63442]}), {}) 
+2022-12-01 20:14:26,525 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:14:32,529 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63442)>,), {}) 
+2022-12-01 20:14:32,529 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:14:32,529 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669907670.685071, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63442]}, 'contact': 'Ludmila'} 
+2022-12-01 20:14:32,530 - INFO     - Клиент ('127.0.0.1', 63442) отключился от сервера. 
+2022-12-01 20:16:54,771 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:18:33,339 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:19:10,937 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63454)>,), {}) 
+2022-12-01 20:19:10,938 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:19:11,541 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907927.767306, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63454]}} 
+2022-12-01 20:19:11,542 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:19:25,497 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669907927.767306, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63454]}} 
+2022-12-01 20:19:25,499 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:19:25,705 - DEBUG    - server: send_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63454]}), {}) 
+2022-12-01 20:19:25,705 - INFO     - Функция send_message вызвана из функции _bootstrap 
+2022-12-01 20:20:46,654 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:21:32,638 - DEBUG    - server: get_message((<socket.socket fd=10, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63465)>,), {}) 
+2022-12-01 20:21:32,638 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:21:34,048 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908066.9167209, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63465]}} 
+2022-12-01 20:21:34,048 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:21:41,804 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908066.9167209, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63465]}} 
+2022-12-01 20:21:41,804 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:21:42,021 - DEBUG    - server: send_message((<socket.socket fd=10, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63465]}), {}) 
+2022-12-01 20:21:42,021 - INFO     - Функция send_message вызвана из функции _bootstrap 
+2022-12-01 20:22:46,821 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:22:56,892 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63470)>,), {}) 
+2022-12-01 20:22:56,893 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:22:56,893 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908174.882748, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63470]}} 
+2022-12-01 20:22:56,893 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:23:38,688 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:23:51,921 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63475)>,), {}) 
+2022-12-01 20:23:51,921 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:23:51,922 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908229.9135911, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63475]}} 
+2022-12-01 20:23:51,922 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:24:16,467 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:24:28,872 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63480)>,), {}) 
+2022-12-01 20:24:28,873 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:24:28,873 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908266.867624, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63480]}} 
+2022-12-01 20:24:28,873 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:24:39,995 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908266.867624, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63480]}} 
+2022-12-01 20:24:39,995 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:24:40,630 - DEBUG    - server: send_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63480)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63480]}), {}) 
+2022-12-01 20:24:40,630 - INFO     - Функция send_message вызвана из функции _bootstrap 
+2022-12-01 20:29:37,129 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:29:45,289 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63494)>,), {}) 
+2022-12-01 20:29:45,289 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:29:45,290 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908584.822032, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63494]}} 
+2022-12-01 20:29:45,290 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:30:04,237 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669908584.822032, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63494]}} 
+2022-12-01 20:30:04,237 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:30:06,240 - DEBUG    - server: send_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63494)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63494]}), {}) 
+2022-12-01 20:30:06,241 - INFO     - Функция send_message вызвана из функции _bootstrap 
+2022-12-01 20:31:22,847 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63494)>,), {}) 
+2022-12-01 20:31:22,847 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:31:31,957 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669908663.604842, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63494]}, 'contact': 'Ludmila'} 
+2022-12-01 20:31:39,793 - INFO     - Клиент ('127.0.0.1', 63494) отключился от сервера. 
+2022-12-01 20:37:52,813 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:38:07,114 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63502)>,), {}) 
+2022-12-01 20:38:07,115 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:38:07,115 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909085.110212, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63502]}} 
+2022-12-01 20:38:07,115 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:38:07,131 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909085.110212, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63502]}} 
+2022-12-01 20:38:07,131 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:38:07,135 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63502)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63502]}), {}) 
+2022-12-01 20:38:07,135 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:38:13,140 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63502)>,), {}) 
+2022-12-01 20:38:13,140 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:38:13,140 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669909091.303374, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63502]}, 'contact': 'Ludmila'} 
+2022-12-01 20:38:13,141 - INFO     - Клиент ('127.0.0.1', 63502) отключился от сервера. 
+2022-12-01 20:40:09,461 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:40:23,932 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63504)>,), {}) 
+2022-12-01 20:40:23,932 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:40:23,933 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909221.926471, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63504]}} 
+2022-12-01 20:40:23,933 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:40:23,948 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909221.926471, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63504]}} 
+2022-12-01 20:40:23,948 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:40:23,952 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63504)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63504]}), {}) 
+2022-12-01 20:40:23,952 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:40:29,956 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63504)>,), {}) 
+2022-12-01 20:40:29,957 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:40:29,957 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669909228.3703942, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63504]}, 'contact': 'Ludmila'} 
+2022-12-01 20:40:29,957 - INFO     - Клиент ('127.0.0.1', 63504) отключился от сервера. 
+2022-12-01 20:46:25,495 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:46:34,976 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63505)>,), {}) 
+2022-12-01 20:46:34,976 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:46:34,976 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909592.9738638, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63505]}} 
+2022-12-01 20:46:34,976 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:46:34,987 - INFO     - Клиент ('127.0.0.1', 63505) отключился от сервера. 
+2022-12-01 20:46:57,372 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:47:08,365 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63506)>,), {}) 
+2022-12-01 20:47:08,365 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:47:08,365 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909626.359338, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63506]}} 
+2022-12-01 20:47:08,365 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:47:08,381 - INFO     - Клиент ('127.0.0.1', 63506) отключился от сервера. 
+2022-12-01 20:50:05,716 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:50:16,228 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63507)>,), {}) 
+2022-12-01 20:50:16,228 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:50:16,228 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909814.22418, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63507]}} 
+2022-12-01 20:50:16,228 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:50:16,245 - INFO     - Клиент ('127.0.0.1', 63507) отключился от сервера. 
+2022-12-01 20:51:02,100 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:51:13,148 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63509)>,), {}) 
+2022-12-01 20:51:13,148 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:51:13,148 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669909871.142273, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63509]}} 
+2022-12-01 20:51:13,149 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:51:13,163 - INFO     - Клиент ('127.0.0.1', 63509) отключился от сервера. 
+2022-12-01 20:52:35,962 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:53:38,255 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63516)>,), {}) 
+2022-12-01 20:53:38,255 - INFO     - Функция get_message вызвана из функции _bootstrap 
+2022-12-01 20:53:51,564 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910016.249452, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63516]}} 
+2022-12-01 20:53:56,769 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:54:29,532 - INFO     - Клиент ('127.0.0.1', 63516) отключился от сервера. 
+2022-12-01 20:56:24,250 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:56:24,300 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 20:56:48,713 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>,), {}) 
+2022-12-01 20:56:48,713 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:56:48,713 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910206.7083929, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}} 
+2022-12-01 20:56:48,713 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:56:48,727 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910206.7083929, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}} 
+2022-12-01 20:56:48,727 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:56:48,730 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63517]}), {}) 
+2022-12-01 20:56:48,730 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:04,740 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>,), {}) 
+2022-12-01 20:57:04,740 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:04,740 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910222.166815, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}, 'contact': 'Ludmila'} 
+2022-12-01 20:57:04,745 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910222.166815, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}, 'contact': 'Ludmila'} 
+2022-12-01 20:57:04,747 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>, {'response': 205}), {}) 
+2022-12-01 20:57:04,747 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:31,558 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>,), {}) 
+2022-12-01 20:57:31,559 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:31,559 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910249.55659, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}} 
+2022-12-01 20:57:31,559 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:57:31,571 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910249.55659, 'type': 'status', 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}} 
+2022-12-01 20:57:31,571 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:57:31,587 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>, {'response': 200, 'data': None, 'login': 'Ludmila', 'sock': ['127.0.0.1', 63518]}), {}) 
+2022-12-01 20:57:31,588 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:53,600 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>,), {}) 
+2022-12-01 20:57:53,601 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:53,601 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910271.768425, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}, 'to': 'Ludmila', 'message_text': 'Hi'} 
+2022-12-01 20:57:53,601 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910271.768425, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}, 'to': 'Ludmila', 'message_text': 'Hi'} 
+2022-12-01 20:57:53,602 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910271.768425, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63517]}, 'to': 'Ludmila', 'message_text': 'Hi'} 
+2022-12-01 20:57:53,602 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>, {'response': 200, 'data': 'Hi', 'login': 'Ruslan', 'to': 'Ludmila', 'sock_address': ['127.0.0.1', 63518]}), {}) 
+2022-12-01 20:57:53,602 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:57,613 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>,), {}) 
+2022-12-01 20:57:57,614 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:57:57,614 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910275.3890188, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}, 'contact': 'Ruslan'} 
+2022-12-01 20:57:57,618 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910275.3890188, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}, 'contact': 'Ruslan'} 
+2022-12-01 20:57:57,619 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>, {'response': 205}), {}) 
+2022-12-01 20:57:57,619 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:58:17,639 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>,), {}) 
+2022-12-01 20:58:17,640 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:58:17,640 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910296.504253, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}, 'to': 'Ruslan', 'message_text': 'bye'} 
+2022-12-01 20:58:17,640 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910296.504253, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}, 'to': 'Ruslan', 'message_text': 'bye'} 
+2022-12-01 20:58:17,641 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>, {'response': 200, 'data': 'bye', 'login': 'Ludmila', 'to': 'Ruslan', 'sock_address': ['127.0.0.1', 63517]}), {}) 
+2022-12-01 20:58:17,641 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:58:17,652 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910296.504253, 'user': {'account_name': 'Ludmila', 'sock': ['127.0.0.1', 63518]}, 'to': 'Ruslan', 'message_text': 'bye'} 
+2022-12-01 20:58:27,659 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63517)>,), {}) 
+2022-12-01 20:58:27,659 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:58:29,662 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63518)>,), {}) 
+2022-12-01 20:58:29,662 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:58:50,173 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>,), {}) 
+2022-12-01 20:58:50,174 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:58:50,174 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910328.171414, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}} 
+2022-12-01 20:58:50,174 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:58:50,185 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910328.171414, 'type': 'status', 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}} 
+2022-12-01 20:58:50,185 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:58:50,195 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>, {'response': 200, 'data': None, 'login': 'Ruslan', 'sock': ['127.0.0.1', 63519]}), {}) 
+2022-12-01 20:58:50,196 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:59:07,257 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63520)>,), {}) 
+2022-12-01 20:59:07,258 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:59:07,258 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910345.255431, 'type': 'status', 'user': {'account_name': 'Test', 'sock': ['127.0.0.1', 63520]}} 
+2022-12-01 20:59:07,258 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:59:07,277 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910345.255431, 'type': 'status', 'user': {'account_name': 'Test', 'sock': ['127.0.0.1', 63520]}} 
+2022-12-01 20:59:07,277 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 20:59:07,285 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63520)>, {'response': 200, 'data': None, 'login': 'Test', 'sock': ['127.0.0.1', 63520]}), {}) 
+2022-12-01 20:59:07,285 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:59:27,298 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63520)>,), {}) 
+2022-12-01 20:59:27,298 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:59:27,299 - DEBUG    - Получено сообщение от клиента {'action': 'del_contact', 'time': 1669910364.78366, 'user': {'account_name': 'Test', 'sock': ['127.0.0.1', 63520]}, 'contact': 'cl'} 
+2022-12-01 20:59:27,302 - ERROR    - Bad request 400 
+2022-12-01 20:59:27,303 - DEBUG    - Получено сообщение от клиента {'action': 'del_contact', 'time': 1669910364.78366, 'user': {'account_name': 'Test', 'sock': ['127.0.0.1', 63520]}, 'contact': 'cl'} 
+2022-12-01 20:59:27,304 - ERROR    - Bad request 400 
+2022-12-01 20:59:27,304 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63520)>, {'response': 400, 'error': 'Bad Request'}), {}) 
+2022-12-01 20:59:27,304 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 20:59:39,316 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63520)>,), {}) 
+2022-12-01 20:59:39,317 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:00:02,045 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63521)>,), {}) 
+2022-12-01 21:00:02,045 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:00:02,046 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910400.043123, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63521]}} 
+2022-12-01 21:00:02,046 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:00:02,060 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910400.043123, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63521]}} 
+2022-12-01 21:00:02,061 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:00:02,069 - DEBUG    - server: send_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63521)>, {'response': 200, 'data': None, 'login': 'Russia', 'sock': ['127.0.0.1', 63521]}), {}) 
+2022-12-01 21:00:02,069 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:00:10,075 - DEBUG    - server: get_message((<socket.socket fd=13, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63521)>,), {}) 
+2022-12-01 21:00:10,075 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:00:40,474 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>,), {}) 
+2022-12-01 21:00:40,474 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:00:40,475 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910438.472484, 'type': 'status', 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}} 
+2022-12-01 21:00:40,475 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:00:40,486 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910438.472484, 'type': 'status', 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}} 
+2022-12-01 21:00:40,486 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:00:40,496 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>, {'response': 200, 'data': None, 'login': 'Italia', 'sock': ['127.0.0.1', 63522]}), {}) 
+2022-12-01 21:00:40,496 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:02,508 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>,), {}) 
+2022-12-01 21:01:02,508 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:02,509 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910460.9155798, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'contact': 'Ruslan'} 
+2022-12-01 21:01:02,512 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910460.9155798, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'contact': 'Ruslan'} 
+2022-12-01 21:01:02,514 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>, {'response': 205}), {}) 
+2022-12-01 21:01:02,514 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:12,528 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>,), {}) 
+2022-12-01 21:01:12,529 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:12,529 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910472.248401, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'to': 'Ruslan', 'message_text': '2qwq2qw'} 
+2022-12-01 21:01:12,529 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910472.248401, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'to': 'Ruslan', 'message_text': '2qwq2qw'} 
+2022-12-01 21:01:12,530 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>, {'response': 200, 'data': '2qwq2qw', 'login': 'Italia', 'to': 'Ruslan', 'sock_address': ['127.0.0.1', 63519]}), {}) 
+2022-12-01 21:01:12,530 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:12,543 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910472.248401, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'to': 'Ruslan', 'message_text': '2qwq2qw'} 
+2022-12-01 21:01:18,546 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>,), {}) 
+2022-12-01 21:01:18,546 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:18,546 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910478.453103, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}, 'contact': 'Italia'} 
+2022-12-01 21:01:18,549 - DEBUG    - Получено сообщение от клиента {'action': 'add_contact', 'time': 1669910478.453103, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}, 'contact': 'Italia'} 
+2022-12-01 21:01:18,551 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>, {'response': 205}), {}) 
+2022-12-01 21:01:18,551 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:26,563 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>,), {}) 
+2022-12-01 21:01:26,563 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:26,564 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910486.4837272, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}, 'to': 'Italia', 'message_text': 'sdsdsd'} 
+2022-12-01 21:01:26,564 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910486.4837272, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}, 'to': 'Italia', 'message_text': 'sdsdsd'} 
+2022-12-01 21:01:26,564 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910486.4837272, 'user': {'account_name': 'Ruslan', 'sock': ['127.0.0.1', 63519]}, 'to': 'Italia', 'message_text': 'sdsdsd'} 
+2022-12-01 21:01:26,565 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>, {'response': 200, 'data': 'sdsdsd', 'login': 'Ruslan', 'to': 'Italia', 'sock_address': ['127.0.0.1', 63522]}), {}) 
+2022-12-01 21:01:26,565 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:44,594 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>,), {}) 
+2022-12-01 21:01:44,594 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:44,594 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910501.8139222, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'to': 'Ruslan', 'message_text': 'sdsdsds'} 
+2022-12-01 21:01:44,594 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910501.8139222, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'to': 'Ruslan', 'message_text': 'sdsdsds'} 
+2022-12-01 21:01:44,595 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>, {'response': 200, 'data': 'sdsdsds', 'login': 'Italia', 'to': 'Ruslan', 'sock_address': ['127.0.0.1', 63519]}), {}) 
+2022-12-01 21:01:44,595 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:44,610 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910501.8139222, 'user': {'account_name': 'Italia', 'sock': ['127.0.0.1', 63522]}, 'to': 'Ruslan', 'message_text': 'sdsdsds'} 
+2022-12-01 21:01:48,614 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63519)>,), {}) 
+2022-12-01 21:01:48,614 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:01:50,616 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63522)>,), {}) 
+2022-12-01 21:01:50,616 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:05:11,547 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 21:07:17,090 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 21:07:39,906 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63523)>,), {}) 
+2022-12-01 21:07:39,907 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:07:39,907 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910857.901012, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63523]}} 
+2022-12-01 21:07:39,907 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:07:39,923 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910857.901012, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63523]}} 
+2022-12-01 21:07:39,923 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:07:39,927 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63523)>, {'response': 200, 'data': None, 'login': 'Russia', 'sock': ['127.0.0.1', 63523]}), {}) 
+2022-12-01 21:07:39,927 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:08:45,752 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63524)>,), {}) 
+2022-12-01 21:08:45,753 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:08:45,753 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910923.749959, 'type': 'status', 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63524]}} 
+2022-12-01 21:08:45,753 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:08:45,762 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669910923.749959, 'type': 'status', 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63524]}} 
+2022-12-01 21:08:45,763 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:08:45,767 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63524)>, {'response': 200, 'data': None, 'login': 'Чиполино', 'sock': ['127.0.0.1', 63524]}), {}) 
+2022-12-01 21:08:45,767 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:09:31,794 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63523)>,), {}) 
+2022-12-01 21:09:31,795 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:09:31,795 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910971.043822, 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63523]}, 'to': 'Чиполино', 'message_text': 'Привет радужный'} 
+2022-12-01 21:09:31,795 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910971.043822, 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63523]}, 'to': 'Чиполино', 'message_text': 'Привет радужный'} 
+2022-12-01 21:09:31,795 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910971.043822, 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63523]}, 'to': 'Чиполино', 'message_text': 'Привет радужный'} 
+2022-12-01 21:09:31,795 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63524)>, {'response': 200, 'data': 'Привет радужный', 'login': 'Russia', 'to': 'Чиполино', 'sock_address': ['127.0.0.1', 63524]}), {}) 
+2022-12-01 21:09:31,796 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:09:43,826 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63524)>,), {}) 
+2022-12-01 21:09:43,827 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:09:43,827 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910981.541853, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63524]}, 'to': 'Russia', 'message_text': 'Иди ты'} 
+2022-12-01 21:09:43,827 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910981.541853, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63524]}, 'to': 'Russia', 'message_text': 'Иди ты'} 
+2022-12-01 21:09:43,828 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63523)>, {'response': 200, 'data': 'Иди ты', 'login': 'Чиполино', 'to': 'Russia', 'sock_address': ['127.0.0.1', 63523]}), {}) 
+2022-12-01 21:09:43,828 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:09:43,837 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669910981.541853, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63524]}, 'to': 'Russia', 'message_text': 'Иди ты'} 
+2022-12-01 21:09:51,843 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63523)>,), {}) 
+2022-12-01 21:09:51,843 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:13:46,852 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 21:13:58,595 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63525)>,), {}) 
+2022-12-01 21:13:58,595 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:13:58,595 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911236.590954, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63525]}} 
+2022-12-01 21:13:58,595 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:13:58,612 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911236.590954, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63525]}} 
+2022-12-01 21:13:58,613 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:13:58,616 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63525)>, {'response': 200, 'data': None, 'login': 'Russia', 'sock': ['127.0.0.1', 63525]}), {}) 
+2022-12-01 21:13:58,616 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:14:34,190 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63526)>,), {}) 
+2022-12-01 21:14:34,191 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:14:34,191 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911272.1886258, 'type': 'status', 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63526]}} 
+2022-12-01 21:14:34,191 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:14:34,200 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911272.1886258, 'type': 'status', 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63526]}} 
+2022-12-01 21:14:34,200 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:14:34,204 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63526)>, {'response': 200, 'data': None, 'login': 'Чиполино', 'sock': ['127.0.0.1', 63526]}), {}) 
+2022-12-01 21:14:34,204 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:02,220 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63526)>,), {}) 
+2022-12-01 21:15:02,222 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:02,222 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911300.9836318, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63526]}, 'to': 'Russia', 'message_text': 'Хахахаха'} 
+2022-12-01 21:15:02,222 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911300.9836318, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63526]}, 'to': 'Russia', 'message_text': 'Хахахаха'} 
+2022-12-01 21:15:02,223 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63525)>, {'response': 200, 'data': 'Хахахаха', 'login': 'Чиполино', 'to': 'Russia', 'sock_address': ['127.0.0.1', 63525]}), {}) 
+2022-12-01 21:15:02,223 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:02,236 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911300.9836318, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63526]}, 'to': 'Russia', 'message_text': 'Хахахаха'} 
+2022-12-01 21:15:14,243 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63525)>,), {}) 
+2022-12-01 21:15:14,243 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:14,243 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911311.332839, 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63525]}, 'to': 'Чиполино', 'message_text': '121212'} 
+2022-12-01 21:15:14,243 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911311.332839, 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63525]}, 'to': 'Чиполино', 'message_text': '121212'} 
+2022-12-01 21:15:14,244 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911311.332839, 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63525]}, 'to': 'Чиполино', 'message_text': '121212'} 
+2022-12-01 21:15:14,244 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63526)>, {'response': 200, 'data': '121212', 'login': 'Russia', 'to': 'Чиполино', 'sock_address': ['127.0.0.1', 63526]}), {}) 
+2022-12-01 21:15:14,244 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:20,255 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63526)>,), {}) 
+2022-12-01 21:15:20,256 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:25,755 - INFO     - PORT : 7777 ,IP_ADDRESS  
+2022-12-01 21:15:53,376 - DEBUG    - server: get_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63527)>,), {}) 
+2022-12-01 21:15:53,376 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:15:53,377 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911351.37299, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63527]}} 
+2022-12-01 21:15:53,377 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:15:53,404 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911351.37299, 'type': 'status', 'user': {'account_name': 'Russia', 'sock': ['127.0.0.1', 63527]}} 
+2022-12-01 21:15:53,405 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:15:53,408 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63527)>, {'response': 200, 'data': None, 'login': 'Russia', 'sock': ['127.0.0.1', 63527]}), {}) 
+2022-12-01 21:15:53,409 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:16:10,106 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63528)>,), {}) 
+2022-12-01 21:16:10,107 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:16:10,107 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911368.105081, 'type': 'status', 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63528]}} 
+2022-12-01 21:16:10,107 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:16:10,115 - DEBUG    - Получено сообщение от клиента {'action': 'presence', 'time': 1669911368.105081, 'type': 'status', 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63528]}} 
+2022-12-01 21:16:10,115 - INFO     - Соединение с клиентом: НОРМАЛЬНОЕ {'response': 200} 
+2022-12-01 21:16:10,120 - DEBUG    - server: send_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63528)>, {'response': 200, 'data': None, 'login': 'Чиполино', 'sock': ['127.0.0.1', 63528]}), {}) 
+2022-12-01 21:16:10,120 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:16:42,139 - DEBUG    - server: get_message((<socket.socket fd=8, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63528)>,), {}) 
+2022-12-01 21:16:42,139 - INFO     - Функция get_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:16:42,140 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911400.2820091, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63528]}, 'to': 'Russia', 'message_text': 'привет жопаааааааааааа вонючачая'} 
+2022-12-01 21:16:42,140 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911400.2820091, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63528]}, 'to': 'Russia', 'message_text': 'привет жопаааааааааааа вонючачая'} 
+2022-12-01 21:16:42,140 - DEBUG    - server: send_message((<socket.socket fd=12, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7777), raddr=('127.0.0.1', 63527)>, {'response': 200, 'data': 'привет жопаааааааааааа вонючачая', 'login': 'Чиполино', 'to': 'Russia', 'sock_address': ['127.0.0.1', 63527]}), {}) 
+2022-12-01 21:16:42,140 - INFO     - Функция send_message вызвана из функции _bootstrap_inner 
+2022-12-01 21:16:42,154 - DEBUG    - Получено сообщение от клиента {'action': 'message', 'time': 1669911400.2820091, 'user': {'account_name': 'Чиполино', 'sock': ['127.0.0.1', 63528]}, 'to': 'Russia', 'message_text': 'привет жопаааааааааааа вонючачая'} 
