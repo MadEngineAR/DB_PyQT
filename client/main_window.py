@@ -248,6 +248,7 @@ class ClientMainWindow(QMainWindow):
                                           QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
                     self.add_contact(sender)
                     self.current_chat = sender
+                    self.database_client.get_history()
                     self.set_active_user()
 
     # Слот потери соединения

@@ -55,7 +55,7 @@ class Server(threading.Thread, QObject):
             port = message['user']['sock'][1]
             self.database.user_login(username, ip_address, port)
             self.new_connection.emit()
-
+            users.append(message[USER])
             print(users)
             return {
                 RESPONSE: 200,
@@ -150,19 +150,9 @@ class Server(threading.Thread, QObject):
         '''Метод реализующий авторизцию пользователей.'''
         # Если имя пользователя уже занято то возвращаем 400
         logger.debug(f'Start auth process for {message[USER]}')
-        if message[USER][ACCOUNT_NAME] in [user['account_name'] for user in users]:
-            response = RESPONSE_400
-            response[ERROR] = 'Имя пользователя уже занято.'
-            try:
-                logger.debug(f'Username busy, sending {response}')
-                send_message(sock, response)
-            except OSError:
-                logger.debug('OS Error')
-                pass
-            self.clients.remove(sock)
-            sock.close()
+
         # Проверяем что пользователь зарегистрирован на сервере.
-        elif not self.database.check_user(message[USER][ACCOUNT_NAME]):
+        if not self.database.check_user(message[USER][ACCOUNT_NAME]):
             response = RESPONSE_400
             response[ERROR] = 'Пользователь не зарегистрирован.'
             try:
@@ -254,19 +244,15 @@ class Server(threading.Thread, QObject):
                             message_from_client = get_message(client_with_message)
                             print(message_from_client)
                             if message_from_client['action'] == 'exit':
-                                # client_with_message.close()
                                 recv_data_lst.remove(client_with_message)
                                 send_data_lst.remove(client_with_message)
                                 self.clients.remove(client_with_message)
-                                # print(client_with_message.getpeername())
                                 self.clients_socket_names.remove(client_with_message.getpeername())
-                                # print(message_from_client[USER])
-                                # print(users)
-
                                 users.remove(message_from_client[USER])
-                                # print(users)
+
                             else:
                                 self.messages.append(message_from_client)
+                                print(self.messages)
                                 self.process_client_message(message_from_client, client_with_message)
                         except Exception:
                             logger.info(f'Клиент {client_with_message.getpeername()} '
@@ -287,10 +273,8 @@ class Server(threading.Thread, QObject):
                                 try:
                                     if message['action'] == 'add_contact':
                                         response = self.process_client_message(message, s_listener)
-                                        # print(response)
                                         send_message(s_listener, response)
                                         message['message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
-                                        # print(message)
                                         self.database.contact(message[USER][ACCOUNT_NAME], message['contact'],
                                                               datetime.datetime.now(),
                                                               message['message_text']
@@ -305,10 +289,10 @@ class Server(threading.Thread, QObject):
                                                                   datetime.datetime.now(),
                                                                   message['message_text'])
                                         # print('yep')
-                                    else:
-                                        # pass
-                                        response = self.process_client_message(message, s_listener)
-                                        # send_message(s_listener, response)
+                                    # else:
+                                    #     # pass
+                                    #     response = self.process_client_message(message, s_listener)
+                                    #     # send_message(s_listener, response)
                                 except BrokenPipeError:
                                     print('Вах')
                                     send_data_lst.remove(s_listener)

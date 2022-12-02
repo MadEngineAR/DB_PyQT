@@ -6,7 +6,6 @@ from PyQt6.QtCore import QTimer
 from server.stat_window import StatWindow
 from server.config_window import ConfigWindow
 from server.add_user import RegisterUser
-from server.remove_user import DelUserDialog
 from server_qui import gui_create_model, HistoryWindow, create_stat_model
 
 conflag_lock = threading.Lock()
@@ -41,8 +40,6 @@ class MainWindowServer(QMainWindow):
         # Кнопка регистрации пользователя
         self.register_btn = QAction('Регистрация пользователя', self)
 
-        # Кнопка удаления пользователя
-        self.remove_btn = QAction('Удаление пользователя', self)
 
         # Кнопка вывести историю сообщений
         self.show_history_button = QAction('История клиентов', self)
@@ -58,7 +55,7 @@ class MainWindowServer(QMainWindow):
         self.toolbar.addAction(self.show_history_button)
         self.toolbar.addAction(self.config_btn)
         self.toolbar.addAction(self.register_btn)
-        self.toolbar.addAction(self.remove_btn)
+
 
         # Настройки геометрии основного окна
         # Поскольку работать с динамическими размерами мы не умеем, и мало
@@ -86,7 +83,6 @@ class MainWindowServer(QMainWindow):
         self.show_history_button.triggered.connect(self.show_statistics)
         self.config_btn.triggered.connect(self.server_config)
         self.register_btn.triggered.connect(self.reg_user)
-        self.remove_btn.triggered.connect(self.rem_user)
 
         self.statusBar().showMessage('Server Working')
         self.active_clients_table.setModel(gui_create_model(database))
@@ -115,47 +111,6 @@ class MainWindowServer(QMainWindow):
         global config_window
         # Создаём окно и заносим в него текущие параметры
         config_window = ConfigWindow(self.config)
-        # config_window.db_path.insert(config['SETTINGS']['Database_path'])
-        # config_window.db_file.insert(config['SETTINGS']['Database_file'])
-        # config_window.port.insert(config['SETTINGS']['Default_port'])
-        # config_window.ip.insert(config['SETTINGS']['Listen_Address'])
-        # config_window.save_btn.clicked.connect(self.save_server_config)
-
-
-# def create_users_model(self):
-#     '''Метод заполняющий таблицу активных пользователей.'''
-#     list_users = self.database.active_users_list()
-#     list = QStandardItemModel()
-#     list.setHorizontalHeaderLabels(
-#         ['Имя Клиента', 'IP Адрес', 'Порт', 'Время подключения'])
-#     for row in list_users:
-#         user, ip, port, time = row
-#         user = QStandardItem(user)
-#         user.setEditable(False)
-#         ip = QStandardItem(ip)
-#         ip.setEditable(False)
-#         port = QStandardItem(str(port))
-#         port.setEditable(False)
-#         # Уберём милисекунды из строки времени, т.к. такая точность не
-#         # требуется.
-#         time = QStandardItem(str(time.replace(microsecond=0)))
-#         time.setEditable(False)
-#         list.appendRow([user, ip, port, time])
-#     self.active_clients_table.setModel(list)
-#     self.active_clients_table.resizeColumnsToContents()
-#     self.active_clients_table.resizeRowsToContents()
-#
-# def show_statistics(self):
-#     '''Метод создающий окно со статистикой клиентов.'''
-#     global stat_window
-#     stat_window = StatWindow(self.database)
-#     stat_window.show()
-#
-# def server_config(self):
-#     '''Метод создающий окно с настройками сервера.'''
-#     global config_window
-#     # Создаём окно и заносим в него текущие параметры
-#     config_window = ConfigWindow(self.config)
 
     def reg_user(self):
         '''Метод создающий окно регистрации пользователя.'''
@@ -165,12 +120,6 @@ class MainWindowServer(QMainWindow):
 
 
 
-    def rem_user(self):
-        '''Метод создающий окно удаления пользователя.'''
-        global rem_window
-        rem_window = DelUserDialog(self.database, self.server_thread)
-        rem_window.show()
-
     def new_conn(self):
         self.messages.information(self, 'New connection', ' ')
         self.list_update()
@@ -178,12 +127,3 @@ class MainWindowServer(QMainWindow):
     def make_connection(self,server_obj):
         # print(server_obj.new_connection)
         server_obj.new_connection.connect(self.new_conn)
-
-    # @pyqtSlot()
-    # def connection_lost(self):
-    #     self.messages.warning(self, 'Сбой соединения', 'Потеряно соединение с сервером. ')
-    #     self.close()
-    #
-    # def make_connection(self, trans_obj):
-    #     trans_obj.new_message.connect(self.message)
-    #     trans_obj.connection_lost.connect(self.connection_lost)

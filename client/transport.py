@@ -264,6 +264,7 @@ class ClientTransport(threading.Thread, QObject):
                      f' {self.account_name}')
         with socket_lock:
             send_message(self.transport, req)
+            print(req)
             message = get_message(self.transport)
             self.response_process(message)
             if message['response'] == 205:
