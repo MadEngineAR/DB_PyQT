@@ -1,3 +1,6 @@
+import binascii
+import hashlib
+import hmac
 import socket
 import time
 import threading
@@ -5,6 +8,7 @@ from PyQt6.QtCore import pyqtSignal, QObject
 from common.utils import *
 from errors import ServerError, IncorrectDataRecivedError
 from logs.client_log_config import log
+from common.variables import *
 
 # Объект блокировки для работы с сокетом
 socket_lock = threading.Lock()
@@ -19,7 +23,7 @@ class ClientTransport(threading.Thread, QObject):
     new_message = pyqtSignal(str)
     connection_lost = pyqtSignal()
 
-    def __init__(self, port, ip_address, database_client, account_name):
+    def __init__(self, port, ip_address, database_client, account_name, password):
         # Вызываем конструктор предка
         threading.Thread.__init__(self)
         QObject.__init__(self)
@@ -28,9 +32,12 @@ class ClientTransport(threading.Thread, QObject):
         self.database_client = database_client
         # Имя пользователя
         self.account_name = account_name
+        # Пароль
+        self.password = password
+
         # Сокет для работы с сервером
         self.transport = None
-        # self.sock = self.transport
+
         # Устанавливаем соединение:
         self.connection_init(port, ip_address)
         # Обновляем таблицы известных пользователей и контактов
@@ -80,12 +87,36 @@ class ClientTransport(threading.Thread, QObject):
 
         logger.debug('Установлено соединение с сервером')
 
-        # Посылаем серверу приветственное сообщение и получаем ответ что всё нормально или ловим исключение.
+        # Запускаем процедуру авторизации
+        # Получаем хэш пароля
+        passwd_bytes = self.password.encode('utf-8')
+        salt = self.account_name.lower().encode('utf-8')
+        passwd_hash = hashlib.pbkdf2_hmac('sha512', passwd_bytes, salt, 10000)
+        passwd_hash_string = binascii.hexlify(passwd_hash)
+
+        # Посылаем серверу приветственное сообщение и получаем ответ, что всё нормально или ловим исключение.
         try:
             with socket_lock:
-                send_message(self.transport, self.make_presence(self.transport, self.account_name))
-                message = get_message(self.transport)
-                self.response_process(message)
+                send_message(self.transport, self.make_presence())
+                ans = get_message(self.transport)
+                if RESPONSE in ans:
+                    if ans[RESPONSE] == 400:
+                        raise ServerError(ans[ERROR])
+                    elif ans[RESPONSE] == 511:
+                        # Если всё нормально, то продолжаем процедуру
+                        # авторизации.
+                        ans_data = ans[DATA]
+                        hash = hmac.new(passwd_hash_string, ans_data.encode('utf-8'), 'MD5')
+                        digest = hash.digest()
+                        my_ans = RESPONSE_511
+                        my_ans[DATA] = binascii.b2a_base64(
+                            digest).decode('ascii')
+                        send_message(self.transport, my_ans)
+                        self.response_process(get_message(self.transport))
+
+        except (OSError, json.JSONDecodeError) as err:
+                logger.debug(f'Connection error.', exc_info=err)
+                raise ServerError('Сбой соединения в процессе авторизации.')
         except (OSError, json.JSONDecodeError):
             logger.critical('Потеряно соединение с сервером!')
             raise ServerError('Потеряно соединение с сервером!')
@@ -94,8 +125,8 @@ class ClientTransport(threading.Thread, QObject):
         logger.info('Соединение с сервером успешно установлено.')
 
     # Функция, генерирующая приветственное сообщение для сервера
-    @staticmethod
-    def make_presence(sock, account_name):
+
+    def make_presence(self):
         # if not account_name:
         #     account_name = input('Введите имя пользователя: ')
         logger.debug('Сформировано сообщение серверу')
@@ -105,8 +136,8 @@ class ClientTransport(threading.Thread, QObject):
             'time': time.time(),
             'type': 'status',
             'user': {
-                "account_name": account_name,
-                "sock": sock.getsockname(),
+                "account_name": self.account_name,
+                "sock": self.transport.getsockname()
             }
         }
         return data
@@ -131,6 +162,7 @@ class ClientTransport(threading.Thread, QObject):
                     print(f'\n {message}')
                 if message['response'] == 210:
                     print(f'\n {message}')
+
 
                 logger.info('Bad request 400')
             logger.info('Ошибка чтения данных')

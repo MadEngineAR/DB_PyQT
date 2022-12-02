@@ -4,8 +4,6 @@ from PyQt6.QtCore import pyqtSlot, Qt
 import sys
 import logging
 
-from client.start_dialog import UserNameDialog
-
 sys.path.append('../')
 from client.main_window_conv import Ui_MainClientWindow
 from client.add_contact import AddContactDialog
@@ -262,6 +260,3 @@ class ClientMainWindow(QMainWindow):
     def make_connection(self, trans_obj):
         trans_obj.new_message.connect(self.message)
         trans_obj.connection_lost.connect(self.connection_lost)
-
-
-

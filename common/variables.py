@@ -17,7 +17,9 @@ MAX_PACKAGE_LENGTH = 1024
 ENCODING = 'utf-8'
 # Текущий уровень логирования
 LOGGING_LEVEL = logging.DEBUG
-
+DATA = 'bin'
+RESPONSE = 'response'
+ERROR = 'error'
 # Протокол JIM основные ключи:
 ACTION = 'action'
 TIME = 'time'
@@ -33,14 +35,35 @@ ERROR = 'error'
 MESSAGE = 'message'
 MESSAGE_TEXT = 'mess_text'
 EXIT = 'exit'
+LIST_INFO = 'data_list'
+
 
 # Словари - ответы:
 # 200
-RESPONSE_200 = {RESPONSE: 200}
+RESPONSE_200 = {RESPONSE: 200,
+                'data' : None}
 # 400
 RESPONSE_400 = {
     RESPONSE: 400,
     ERROR: None
+}
+# Словари - ответы:
+# 200
+
+# 202
+RESPONSE_202 = {RESPONSE: 202,
+                LIST_INFO: None
+                }
+
+# 205
+RESPONSE_215 = {
+    RESPONSE: 215
+}
+
+# 511
+RESPONSE_511 = {
+    RESPONSE: 511,
+    DATA: None
 }
 
 SERVER_DATABASE = 'sqlite3://server_base.db3'

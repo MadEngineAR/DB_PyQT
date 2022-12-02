@@ -1,24 +1,21 @@
 """Программа Сервер. Используется идея:
 При регистрации на сервер, Имя Пользователя И адрес его Сокета записываются в словарь, и добавляются в
 глобальный список USERS. Отправка сообщения происходит при совпадении адреса Сокета и текущего Клиента"""
+import binascii
 import datetime
 import dis
+import hmac
 import os
 import socket
-import sys
 import threading
-import configparser
 from PyQt6.QtCore import QTimer, pyqtSignal, QObject
-from PyQt6.QtWidgets import QApplication, QMessageBox
-from server_DB import ServerStorage
+from select import select
+
 from descriptor import NonNegative
 from my_socket import MySocket
-from select import select
-from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
-    PRESENCE, TIME, USER, ERROR, DEFAULT_PORT
 from common.utils import get_message, send_message
 from logs.server_log_config import log
-from server_qui import MainWindow, gui_create_model, HistoryWindow, create_stat_model, ConfigWindow
+from common.variables import *
 
 logger = log
 users = []
@@ -26,33 +23,6 @@ users = []
 flag = False
 flag_user_valid = False
 
-# conflag_lock = threading.Lock()
-
-
-class ServerVerifier(type):
-
-    def __init__(cls, QObject, future_class_name, future_class_parents, future_class_attrs):
-        """
-          Метод проверяет наличие запрещенных методов.
-        """
-        super().__init__(type)
-        global flag
-        for func in cls.__dict__:
-            try:
-                ret = dis.get_instructions(cls.__dict__[func])
-            except TypeError:
-                pass
-            else:
-                for i in ret:
-                    if i.argval == 'connect':
-                        raise ValueError(f'Недопуcтимый метод {i.argval}')
-                    if i.argval == 'SOCK_STREAM':
-                        global flag
-                        flag = True
-                        print(f'Подключение по TCP: {flag}')
-
-        if not flag:
-            raise ValueError('Не допустимый тип сокета')
 
 
 class Server(threading.Thread, QObject):
@@ -73,18 +43,17 @@ class Server(threading.Thread, QObject):
         threading.Thread.__init__(self)
         QObject.__init__(self)
 
-    def process_client_message(self, message):
+    def process_client_message(self, message, client):
         global users
         # print(message)
         logger.debug(f'Получено сообщение от клиента {message}')
         if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
-            msg = {RESPONSE: 200}
-            logger.info(f'Соединение с клиентом: НОРМАЛЬНОЕ {msg}')
-            if message[USER] not in users:
-                users.append(message[USER])
-            self.database.user_login(message[USER][ACCOUNT_NAME], message['user']['sock'][0],
-                                     int(message['user']['sock'][1]))
+            self.autorize_user(message, client)
+            username = message[USER][ACCOUNT_NAME]
+            ip_address = message['user']['sock'][0]
+            port = message['user']['sock'][1]
+            self.database.user_login(username, ip_address, port)
             self.new_connection.emit()
 
             print(users)
@@ -165,6 +134,86 @@ class Server(threading.Thread, QObject):
             ERROR: 'Bad Request'
         }
 
+    def remove_client(self, client):
+        '''
+        Метод обработчик клиента с которым прервана связь.
+        Ищет клиента и удаляет его из списков и базы:
+        '''
+        logger.info(f'Клиент {client.getpeername()} отключился от сервера.')
+        for user in users:
+            if user['account_name'] == client:
+                users.remove(user)
+                break
+        self.clients.remove(client)
+        client.close()
+    def autorize_user(self, message, sock):
+        '''Метод реализующий авторизцию пользователей.'''
+        # Если имя пользователя уже занято то возвращаем 400
+        logger.debug(f'Start auth process for {message[USER]}')
+        if message[USER][ACCOUNT_NAME] in [user['account_name'] for user in users]:
+            response = RESPONSE_400
+            response[ERROR] = 'Имя пользователя уже занято.'
+            try:
+                logger.debug(f'Username busy, sending {response}')
+                send_message(sock, response)
+            except OSError:
+                logger.debug('OS Error')
+                pass
+            self.clients.remove(sock)
+            sock.close()
+        # Проверяем что пользователь зарегистрирован на сервере.
+        elif not self.database.check_user(message[USER][ACCOUNT_NAME]):
+            response = RESPONSE_400
+            response[ERROR] = 'Пользователь не зарегистрирован.'
+            try:
+                logger.debug(f'Unknown username, sending {response}')
+                send_message(sock, response)
+            except OSError:
+                pass
+            self.clients.remove(sock)
+            sock.close()
+        else:
+            logger.debug('Correct username, starting passwd check.')
+            # Иначе отвечаем 511 и проводим процедуру авторизации
+            # Словарь - заготовка
+            message_auth = RESPONSE_511
+            # Набор байтов в hex представлении
+            random_str = binascii.hexlify(os.urandom(64))
+            # В словарь байты нельзя, декодируем (json.dumps -> TypeError)
+            message_auth[DATA] = random_str.decode('ascii')
+            # Создаём хэш пароля и связки с рандомной строкой, сохраняем
+            # серверную версию ключа
+            hash = hmac.new(self.database.get_hash(message[USER][ACCOUNT_NAME]), random_str, 'MD5')
+            digest = hash.digest()
+            logger.debug(f'Auth message = {message_auth}')
+            try:
+                # Обмен с клиентом
+                send_message(sock, message_auth)
+                ans = get_message(sock)
+            except OSError as err:
+                logger.debug('Error in auth, data:', exc_info=err)
+                sock.close()
+                return
+            client_digest = binascii.a2b_base64(ans[DATA])
+            # Если ответ клиента корректный, то сохраняем его в список
+            # пользователей.
+            if RESPONSE in ans and ans[RESPONSE] == 511 and hmac.compare_digest(
+                    digest, client_digest):
+                try:
+                    send_message(sock, RESPONSE_200)
+                except OSError:
+                    self.remove_client(message[USER][ACCOUNT_NAME])
+
+            else:
+                response = RESPONSE_400
+                response[ERROR] = 'Неверный пароль.'
+                try:
+                    send_message(sock, response)
+                except OSError:
+                    pass
+                self.clients.remove(sock)
+                sock.close()
+
     def run(self):
         """
         Загрузка параметров командной строки, если нет параметров, то задаём значения по умолчанию.
@@ -218,7 +267,7 @@ class Server(threading.Thread, QObject):
                                 # print(users)
                             else:
                                 self.messages.append(message_from_client)
-                                self.process_client_message(message_from_client)
+                                self.process_client_message(message_from_client, client_with_message)
                         except Exception:
                             logger.info(f'Клиент {client_with_message.getpeername()} '
                                         f'отключился от сервера.')
@@ -237,7 +286,7 @@ class Server(threading.Thread, QObject):
                                          message['action'] == 'add_contact' or message['action'] == 'del_contact'):
                                 try:
                                     if message['action'] == 'add_contact':
-                                        response = self.process_client_message(message)
+                                        response = self.process_client_message(message, s_listener)
                                         # print(response)
                                         send_message(s_listener, response)
                                         message['message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
@@ -247,7 +296,7 @@ class Server(threading.Thread, QObject):
                                                               message['message_text']
                                                               )
                                     elif message['action'] == 'del_contact':
-                                        response = self.process_client_message(message)
+                                        response = self.process_client_message(message, s_listener)
                                         # print(response)
                                         send_message(s_listener, response)
                                         message[
@@ -257,8 +306,9 @@ class Server(threading.Thread, QObject):
                                                                   message['message_text'])
                                         # print('yep')
                                     else:
-                                        response = self.process_client_message(message)
-                                        send_message(s_listener, response)
+                                        # pass
+                                        response = self.process_client_message(message, s_listener)
+                                        # send_message(s_listener, response)
                                 except BrokenPipeError:
                                     print('Вах')
                                     send_data_lst.remove(s_listener)
@@ -268,7 +318,7 @@ class Server(threading.Thread, QObject):
                             elif s_listener.getpeername() in self.clients_socket_names and \
                                     message['action'] == 'message':
                                 try:
-                                    response = self.process_client_message(message)
+                                    response = self.process_client_message(message, s_listener)
                                     print(response)
                                     if len(response['sock_address']) == 0 \
                                             and s_listener.getpeername() == tuple(message['user']['sock']):

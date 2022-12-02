@@ -44,6 +44,7 @@ if __name__ == '__main__':
         app.exec()
         if window.ok_pressed:
             client_name = window.client_name.text()
+            client_passwd = window.client_passwd.text()
 
     # Записываем логи
     logger.info(
@@ -56,7 +57,7 @@ if __name__ == '__main__':
 
     # Создаём объект - транспорт и запускаем транспортный поток
     try:
-        transport = ClientTransport(server_port, server_address, database_client, client_name)
+        transport = ClientTransport(server_port, server_address, database_client, client_name, client_passwd)
     except ServerError as error:
         transport = None
         print(error.text)
