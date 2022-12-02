@@ -156,9 +156,7 @@ class ClientTransport(threading.Thread, QObject):
                         pass
                     else:
                         self.database_client.save_message(message["login"], self.account_name, message["data"])
-                        print('111')
                         self.new_message.emit(message['login'])
-                        print('2222')
                 if message['response'] == 202:
                     print(f'\n {message}')
                 if message['response'] == 205:
@@ -265,11 +263,6 @@ class ClientTransport(threading.Thread, QObject):
             self.response_process(message)
             if message['response'] == 210:
                 self.database_client.del_contact(contact_name)
-        # logger.debug(f'Удаление контакта {contact}')
-        # req = self.del_user_contacts_message(contact)
-        # with socket_lock:
-        #     send_message(self.transport, req)
-        #     self.response_process()
 
     # Функция закрытия соединения, отправляет сообщение о выходе.
     def transport_shutdown(self):
@@ -296,6 +289,16 @@ class ClientTransport(threading.Thread, QObject):
             # self.response_process()
             # print(self.response_process())
             logger.info(f'Отправлено сообщение для пользователя {to}')
+
+    def user_list_update(self):
+        '''Метод обновляющий с сервера список клиентов'''
+        self.database_client.users_clear()
+        self.database_client.update_users()
+
+    # def user_contacts_update(self):
+    #     '''Метод обновляющий с сервера список клиентов'''
+    #     self.database_client.contacts_clear()
+    #     self.database_client.update_contacts()
 
     def run(self):
         logger.debug('Запущен процесс - приёмник собщений с сервера.')
@@ -324,6 +327,9 @@ class ClientTransport(threading.Thread, QObject):
                             print(f'\n {message}')
                         if message['response'] == 210:
                             print(f'\n {message}')
+                        if message['response'] == 215:
+                            self.user_list_update()
+                            # self.user_contacts_update()
                         if message['response'] == 400:
                             self.transport.close()
                         logger.info('Bad request 400')

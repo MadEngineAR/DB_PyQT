@@ -83,6 +83,7 @@ class RegisterUser(QDialog):
                 binascii.hexlify(passwd_hash))
             self.messages.information(
                 self, 'Успех', 'Пользователь успешно зарегистрирован.')
+            self.server.service_update_lists()
             # Рассылаем клиентам сообщение о необходимости обновить справочники
             # self.server.service_update_lists()
             self.close()

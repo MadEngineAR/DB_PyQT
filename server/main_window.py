@@ -11,6 +11,7 @@ from server_qui import gui_create_model, HistoryWindow, create_stat_model
 conflag_lock = threading.Lock()
 config = configparser.ConfigParser()
 
+
 class MainWindowServer(QMainWindow):
     '''Класс - основное окно сервера.'''
 
@@ -26,7 +27,6 @@ class MainWindowServer(QMainWindow):
 
         self.messages = QMessageBox()
 
-
         # Ярлык выхода
         self.exitAction = QAction('Выход', self)
         self.exitAction.setShortcut('Ctrl+Q')
@@ -39,7 +39,6 @@ class MainWindowServer(QMainWindow):
 
         # Кнопка регистрации пользователя
         self.register_btn = QAction('Регистрация пользователя', self)
-
 
         # Кнопка вывести историю сообщений
         self.show_history_button = QAction('История клиентов', self)
@@ -55,7 +54,6 @@ class MainWindowServer(QMainWindow):
         self.toolbar.addAction(self.show_history_button)
         self.toolbar.addAction(self.config_btn)
         self.toolbar.addAction(self.register_btn)
-
 
         # Настройки геометрии основного окна
         # Поскольку работать с динамическими размерами мы не умеем, и мало
@@ -88,14 +86,13 @@ class MainWindowServer(QMainWindow):
         self.active_clients_table.setModel(gui_create_model(database))
         self.active_clients_table.resizeColumnsToContents()
         self.active_clients_table.resizeRowsToContents()
+
     def list_update(self):
         with conflag_lock:
             self.active_clients_table.setModel(
                 gui_create_model(self.database))
             self.active_clients_table.resizeColumnsToContents()
             self.active_clients_table.resizeRowsToContents()
-
-
 
     # Функция, создающая окно со статистикой клиентов
     def show_statistics(self):
@@ -118,12 +115,10 @@ class MainWindowServer(QMainWindow):
         reg_window = RegisterUser(self.database, self.server_thread)
         reg_window.show()
 
-
-
     def new_conn(self):
         self.messages.information(self, 'New connection', ' ')
         self.list_update()
 
-    def make_connection(self,server_obj):
+    def make_connection(self, server_obj):
         # print(server_obj.new_connection)
         server_obj.new_connection.connect(self.new_conn)

@@ -3,7 +3,6 @@
 глобальный список USERS. Отправка сообщения происходит при совпадении адреса Сокета и текущего Клиента"""
 import binascii
 import datetime
-import dis
 import hmac
 import os
 import socket
@@ -24,10 +23,10 @@ flag = False
 flag_sock_closed = False
 
 
-
 class Server(threading.Thread, QObject):
     port = NonNegative()
     new_connection = pyqtSignal()
+
     def __init__(self, listen_address, port, database):
         # Параметры подключения
         self.addr = listen_address
@@ -57,6 +56,7 @@ class Server(threading.Thread, QObject):
                 self.database.user_login(username, ip_address, port)
                 self.new_connection.emit()
                 users.append(message[USER])
+                # self.service_update_lists()
                 print(users)
                 return {
                     RESPONSE: 200,
@@ -147,6 +147,7 @@ class Server(threading.Thread, QObject):
                 break
         self.clients.remove(client)
         client.close()
+
     def autorize_user(self, message, sock):
         '''Метод реализующий авторизцию пользователей.'''
         # Если имя пользователя уже занято то возвращаем 400
@@ -208,6 +209,13 @@ class Server(threading.Thread, QObject):
                 sock.close()
                 return RESPONSE_400
 
+    def service_update_lists(self):
+        '''Метод реализующий отправки сервисного сообщения 205 клиентам.'''
+        for client in self.clients:
+            try:
+                send_message(client, RESPONSE_215)
+            except OSError:
+                self.clients.remove(client)
 
     def run(self):
         """
@@ -269,7 +277,6 @@ class Server(threading.Thread, QObject):
                 # Если есть сообщения, обрабатываем каждое.
                 if send_data_lst and self.messages:
                     for message in self.messages:
-                        # print(message)
                         self.messages.remove(message)
                         for s_listener in send_data_lst:
                             try:
@@ -281,7 +288,8 @@ class Server(threading.Thread, QObject):
                                         if message['action'] == 'add_contact':
                                             response = self.process_client_message(message, s_listener)
                                             send_message(s_listener, response)
-                                            message['message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
+                                            message[
+                                                'message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
                                             self.database.contact(message[USER][ACCOUNT_NAME], message['contact'],
                                                                   datetime.datetime.now(),
                                                                   message['message_text']
@@ -295,11 +303,6 @@ class Server(threading.Thread, QObject):
                                             self.database.del_contact(message[USER][ACCOUNT_NAME], message['contact'],
                                                                       datetime.datetime.now(),
                                                                       message['message_text'])
-                                            # print('yep')
-                                        # else:
-                                        #     # pass
-                                        #     response = self.process_client_message(message, s_listener)
-                                        #     # send_message(s_listener, response)
                                     except BrokenPipeError:
                                         print('Вах')
                                         send_data_lst.remove(s_listener)
@@ -313,8 +316,9 @@ class Server(threading.Thread, QObject):
                                         print(response)
                                         if len(response['sock_address']) == 0 \
                                                 and s_listener.getpeername() == tuple(message['user']['sock']):
-                                            response['data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
-                                                               f'адресату {message["to"]}'
+                                            response[
+                                                'data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
+                                                          f'адресату {message["to"]}'
                                             send_message(s_listener, response)
                                         elif s_listener.getpeername() == tuple(response['sock_address']):
                                             send_message(s_listener, response)
@@ -331,8 +335,4 @@ class Server(threading.Thread, QObject):
                                     except IndexError:
                                         pass
                             except OSError:
-                                # send_data_lst.remove(s_listener)
-                                # self.clients.remove(s_listener)
                                 pass
-
-

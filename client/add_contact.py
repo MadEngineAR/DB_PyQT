@@ -68,7 +68,7 @@ class AddContactDialog(QDialog):
         # Добавляем список возможных контактов
         for item in possible_contacts_set:
             possible_contact_list.append(item[1])
-        self.selector.addItems(possible_contact_list)
+        self.selector.addItems(sorted(possible_contact_list))
 
     # Обновлялка возможных контактов. Обновляет таблицу известных пользователей,
     # затем содержимое предполагаемых контактов

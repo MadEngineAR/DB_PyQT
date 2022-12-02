@@ -75,3 +75,4 @@ if __name__ == '__main__':
     # Раз графическая оболочка закрылась, закрываем транспорт
     transport.transport_shutdown()
     transport.join()
+    

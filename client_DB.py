@@ -89,6 +89,20 @@ class ClientStorage:
         session = sessionmaker(bind=self.database_engine)
         self.session = session()
 
+    def contacts_clear(self):
+        '''Метод очищающий таблицу со списком контактов.'''
+        self.session.query(self.UsersContactsList).delete()
+
+    def users_clear(self):
+        '''Метод очищающий таблицу со списком контактов.'''
+        self.session.query(self.AllUsersClient).delete()
+
+    def update_users(self):
+        self.load_users_from_server()
+
+    def update_contacts(self, username):
+        self.load_contact_from_server()
+
     def user_list_client(self, username=None):
         query = self.session.query(
             self.AllUsersClient.id,
