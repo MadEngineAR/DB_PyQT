@@ -12,22 +12,21 @@ while True:
     if ACTION == 'q':
         break
     elif ACTION == 's':
-        PROCESS.append(subprocess.Popen('python server.py',
+        try:
+            PROCESS.append(subprocess.Popen('python server.py', stdin=subprocess.PIPE,stdout=subprocess.PIPE,
                                         creationflags=subprocess.CREATE_NEW_CONSOLE))
-        # LISTENERS
-        # for i in range(5):
-        sleep(5)
-        # PROCESS.append(subprocess.Popen('python client.py',
-        #                                 creationflags=subprocess.CREATE_NEW_CONSOLE))
-        # sleep(1)
-        # PROCESS.append(subprocess.Popen('python client.py',
-        #                                 creationflags=subprocess.CREATE_NEW_CONSOLE))
-        # SENDERS
-        sleep(1)
-        for i in range(2):
+        except Exception as e:
+            print(e)
 
-            PROCESS.append(subprocess.Popen('python client.py',
-                                            creationflags=subprocess.CREATE_NEW_CONSOLE))
+
+        # Clients
+        sleep(1)
+
+        for i in range(2):
+            proc = subprocess.Popen('python client_PyQT.py',
+                                            creationflags=subprocess.CREATE_NEW_CONSOLE)
+            PROCESS.append(proc)
+            print(PROCESS)
 
     elif ACTION == 'x':
         while PROCESS:
