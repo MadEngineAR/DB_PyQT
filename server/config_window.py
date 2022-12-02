@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QFileDialog, QMessageBox
+from PyQt6.QtCore import Qt
 import os
 
 
@@ -15,7 +15,7 @@ class ConfigWindow(QDialog):
         '''Настройки окна'''
         self.setFixedSize(365, 260)
         self.setWindowTitle('Настройки сервера')
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setModal(True)
 
         # Надпись о файле базы данных:

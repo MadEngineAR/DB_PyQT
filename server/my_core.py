@@ -8,7 +8,7 @@ import socket
 import sys
 import threading
 import configparser
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, pyqtSignal, QObject
 from PyQt6.QtWidgets import QApplication, QMessageBox
 from server_DB import ServerStorage
 from descriptor import NonNegative
@@ -26,13 +26,12 @@ users = []
 flag = False
 flag_user_valid = False
 
-new_connection = False
-conflag_lock = threading.Lock()
+# conflag_lock = threading.Lock()
 
 
 class ServerVerifier(type):
 
-    def __init__(cls, future_class_name, future_class_parents, future_class_attrs):
+    def __init__(cls, QObject, future_class_name, future_class_parents, future_class_attrs):
         """
           Метод проверяет наличие запрещенных методов.
         """
@@ -56,9 +55,9 @@ class ServerVerifier(type):
             raise ValueError('Не допустимый тип сокета')
 
 
-class Server(threading.Thread, metaclass=ServerVerifier):
+class Server(threading.Thread, QObject):
     port = NonNegative()
-
+    new_connection = pyqtSignal()
     def __init__(self, listen_address, port, database):
         # Параметры подключения
         self.addr = listen_address
@@ -71,7 +70,8 @@ class Server(threading.Thread, metaclass=ServerVerifier):
         self.clients_socket_names = []
         # Список сообщений
         self.messages = []
-        super().__init__()
+        threading.Thread.__init__(self)
+        QObject.__init__(self)
 
     def process_client_message(self, message):
         global users
@@ -85,6 +85,8 @@ class Server(threading.Thread, metaclass=ServerVerifier):
                 users.append(message[USER])
             self.database.user_login(message[USER][ACCOUNT_NAME], message['user']['sock'][0],
                                      int(message['user']['sock'][1]))
+            self.new_connection.emit()
+
             print(users)
             return {
                 RESPONSE: 200,

@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QDialog, QPushButton, QTableView
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QPushButton, QTableView
+from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from PyQt6.QtCore import Qt
 
 
 class StatWindow(QDialog):
@@ -18,7 +18,7 @@ class StatWindow(QDialog):
         # Настройки окна:
         self.setWindowTitle('Статистика клиентов')
         self.setFixedSize(600, 700)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 
         # Кнапка закрытия окна
         self.close_button = QPushButton('Закрыть', self)
