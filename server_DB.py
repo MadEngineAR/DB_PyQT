@@ -21,8 +21,9 @@ import datetime
 
 class ServerStorage:
     class AllUsers:
-        def __init__(self, username, ip_address, port, sender_count, recepient_count):
+        def __init__(self, username, password_hash, ip_address, port, sender_count, recepient_count):
             self.username = username
+            self.passwd_hash = password_hash
             self.last_login = datetime.datetime.now()
             self.ip_address = ip_address
             self.port = port
@@ -61,6 +62,7 @@ class ServerStorage:
         users_table = Table('Users', self.metadata,
                             Column('id', Integer, primary_key=True),
                             Column('username', String, unique=True),
+                            Column('passwd_hash', String),
                             Column('ip_address', String),
                             Column('port', String),
                             Column('last_login', DateTime),
@@ -100,17 +102,49 @@ class ServerStorage:
         if res.count():
             user = res.first()
             user.last_login = datetime.datetime.now()
+            print(user.ip_address)
+            user.ip_address = ip_address
             user.port = port
         else:
             sender_count = 0
             recepient_count = 0
-            user = self.AllUsers(username, ip_address, port, sender_count, recepient_count)
+            print(self.get_hash(username))
+            user = self.AllUsers(username, self.get_hash(username), ip_address, port, sender_count, recepient_count)
             self.session.add(user)
             self.session.commit()
         date_time = datetime.datetime.now()
         history = self.ClientHistory(user.id, ip_address, port, date_time)
         self.session.add(history)
         self.session.commit()
+
+    def add_user(self, name, passwd_hash):
+        '''
+        Метод регистрации пользователя.
+        Принимает имя и хэш пароля, создаёт запись в таблице статистики.
+        '''
+        sender_count = 0
+        recepient_count = 0
+        user = self.AllUsers(name, passwd_hash, None, None, sender_count, recepient_count)
+        self.session.add(user)
+        self.session.commit()
+        date_time = datetime.datetime.now()
+        history = self.ClientHistory(user.id, None, None, date_time)
+        self.session.add(history)
+        self.session.commit()
+
+
+    def check_user(self, name):
+        '''Метод проверяющий существование пользователя.'''
+        if self.session.query(self.AllUsers).filter_by(username=name).count():
+            return True
+        else:
+            return False
+
+
+    def get_hash(self, name):
+        '''Метод получения хэша пароля пользователя.'''
+        user = self.session.query(self.AllUsers).filter_by(username=name).first()
+        return user.passwd_hash
 
     def contact(self, username, add_contact_name, contact_time, message):
         sender = self.session.query(self.AllUsers).filter_by(username=username).first()
@@ -230,25 +264,25 @@ class ServerStorage:
 
 if __name__ == '__main__':
     test_db = ServerStorage()
-    print("Версия SQLAlchemy:", sqlalchemy.__version__)
-    test_db.user_login('client_1', '127.0.0.1', 7777)
-    test_db.user_login('client_2', '127.0.0.1', 8888)
-    test_db.user_login('client_3', '127.0.0.1', 7878)
-    test_db.user_login('client_4', '127.0.0.1', 7888)
-    test_db.user_login('client_5', '127.0.0.1', 7888)
-    print('============== test AllUsers ==============')
-    pprint(test_db.user_list())
+    # print("Версия SQLAlchemy:", sqlalchemy.__version__)
+    # test_db.user_login('client_1', '127.0.0.1', 7777)
+    # test_db.user_login('client_2', '127.0.0.1', 8888)
+    # test_db.user_login('client_3', '127.0.0.1', 7878)
+    # test_db.user_login('client_4', '127.0.0.1', 7888)
+    # test_db.user_login('client_5', '127.0.0.1', 7888)
+    # print('============== test AllUsers ==============')
+    # pprint(test_db.user_list())
+    # #
+    # test_db.contact('client_2', 'client_1', datetime.datetime.now(), 'test_2_1')
+    # test_db.contact('client_2', 'client_3', datetime.datetime.now(), 'test_2_3')
+    # test_db.contact('client_3', 'client_1', datetime.datetime.now(), 'test_3_1')
+    # test_db.contact('client_3', 'client_2', datetime.datetime.now(), 'test_3_2')
     #
-    test_db.contact('client_2', 'client_1', datetime.datetime.now(), 'test_2_1')
-    test_db.contact('client_2', 'client_3', datetime.datetime.now(), 'test_2_3')
-    test_db.contact('client_3', 'client_1', datetime.datetime.now(), 'test_3_1')
-    test_db.contact('client_3', 'client_2', datetime.datetime.now(), 'test_3_2')
-
-    print('============== test ClientsContacts ==============')
-    test_db.contacts_list('client_2')
-    test_db.contacts_list(None)
-    pprint(test_db.contacts_list('client_2'))
-
-    print('============== test ClientsHistory ==============')
-    pprint(test_db.history())
-    pprint(test_db.history('client_3'))
+    # print('============== test ClientsContacts ==============')
+    # test_db.contacts_list('client_2')
+    # test_db.contacts_list(None)
+    # pprint(test_db.contacts_list('client_2'))
+    #
+    # print('============== test ClientsHistory ==============')
+    # pprint(test_db.history())
+    # pprint(test_db.history('client_3'))
