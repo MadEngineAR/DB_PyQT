@@ -21,7 +21,7 @@ logger = log
 users = []
 # Глобальная переменная, переходит в истину если используется socket.type SOCK_STREAM
 flag = False
-flag_user_valid = False
+flag_sock_closed = False
 
 
 
@@ -49,20 +49,21 @@ class Server(threading.Thread, QObject):
         logger.debug(f'Получено сообщение от клиента {message}')
         if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
-            self.autorize_user(message, client)
-            username = message[USER][ACCOUNT_NAME]
-            ip_address = message['user']['sock'][0]
-            port = message['user']['sock'][1]
-            self.database.user_login(username, ip_address, port)
-            self.new_connection.emit()
-            users.append(message[USER])
-            print(users)
-            return {
-                RESPONSE: 200,
-                'data': None,
-                'login': message['user']['account_name'],
-                'sock': message['user']['sock']
-            }
+            res_auth = self.autorize_user(message, client)
+            if res_auth != RESPONSE_400:
+                username = message[USER][ACCOUNT_NAME]
+                ip_address = message['user']['sock'][0]
+                port = message['user']['sock'][1]
+                self.database.user_login(username, ip_address, port)
+                self.new_connection.emit()
+                users.append(message[USER])
+                print(users)
+                return {
+                    RESPONSE: 200,
+                    'data': None,
+                    'login': message['user']['account_name'],
+                    'sock': message['user']['sock']
+                }
         elif ACTION in message and message[ACTION] == 'get_contacts' and TIME in message \
                 and USER in message and message[USER][ACCOUNT_NAME]:
             username = message[USER][ACCOUNT_NAME]
@@ -180,6 +181,8 @@ class Server(threading.Thread, QObject):
                 # Обмен с клиентом
                 send_message(sock, message_auth)
                 ans = get_message(sock)
+                global flag_sock_closed
+                flag_sock_closed = True
             except OSError as err:
                 logger.debug('Error in auth, data:', exc_info=err)
                 sock.close()
@@ -203,6 +206,8 @@ class Server(threading.Thread, QObject):
                     pass
                 self.clients.remove(sock)
                 sock.close()
+                return RESPONSE_400
+
 
     def run(self):
         """
@@ -242,6 +247,7 @@ class Server(threading.Thread, QObject):
                     for client_with_message in recv_data_lst:
                         try:
                             message_from_client = get_message(client_with_message)
+
                             print(message_from_client)
                             if message_from_client['action'] == 'exit':
                                 recv_data_lst.remove(client_with_message)
@@ -266,61 +272,67 @@ class Server(threading.Thread, QObject):
                         # print(message)
                         self.messages.remove(message)
                         for s_listener in send_data_lst:
-                            if s_listener.getpeername() in self.clients_socket_names \
-                                    and s_listener.getpeername() == tuple(message['user']['sock']) \
-                                    and (message['action'] == 'presence' or message['action'] == 'get_contacts' or
-                                         message['action'] == 'add_contact' or message['action'] == 'del_contact'):
-                                try:
-                                    if message['action'] == 'add_contact':
-                                        response = self.process_client_message(message, s_listener)
-                                        send_message(s_listener, response)
-                                        message['message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
-                                        self.database.contact(message[USER][ACCOUNT_NAME], message['contact'],
-                                                              datetime.datetime.now(),
-                                                              message['message_text']
-                                                              )
-                                    elif message['action'] == 'del_contact':
-                                        response = self.process_client_message(message, s_listener)
-                                        # print(response)
-                                        send_message(s_listener, response)
-                                        message[
-                                            'message_text'] = f'Deleted from {message[USER][ACCOUNT_NAME]} contact list'
-                                        self.database.del_contact(message[USER][ACCOUNT_NAME], message['contact'],
+                            try:
+                                if s_listener.getpeername() in self.clients_socket_names \
+                                        and s_listener.getpeername() == tuple(message['user']['sock']) \
+                                        and (message['action'] == 'presence' or message['action'] == 'get_contacts' or
+                                             message['action'] == 'add_contact' or message['action'] == 'del_contact'):
+                                    try:
+                                        if message['action'] == 'add_contact':
+                                            response = self.process_client_message(message, s_listener)
+                                            send_message(s_listener, response)
+                                            message['message_text'] = f'Added to {message[USER][ACCOUNT_NAME]} contact list'
+                                            self.database.contact(message[USER][ACCOUNT_NAME], message['contact'],
                                                                   datetime.datetime.now(),
-                                                                  message['message_text'])
-                                        # print('yep')
-                                    # else:
-                                    #     # pass
-                                    #     response = self.process_client_message(message, s_listener)
-                                    #     # send_message(s_listener, response)
-                                except BrokenPipeError:
-                                    print('Вах')
-                                    send_data_lst.remove(s_listener)
-                                except KeyError:
-                                    self.clients.remove(s_listener)
-                                    pass
-                            elif s_listener.getpeername() in self.clients_socket_names and \
-                                    message['action'] == 'message':
-                                try:
-                                    response = self.process_client_message(message, s_listener)
-                                    print(response)
-                                    if len(response['sock_address']) == 0 \
-                                            and s_listener.getpeername() == tuple(message['user']['sock']):
-                                        response['data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
-                                                           f'адресату {message["to"]}'
-                                        send_message(s_listener, response)
-                                    elif s_listener.getpeername() == tuple(response['sock_address']):
-                                        send_message(s_listener, response)
-
+                                                                  message['message_text']
+                                                                  )
+                                        elif message['action'] == 'del_contact':
+                                            response = self.process_client_message(message, s_listener)
+                                            # print(response)
+                                            send_message(s_listener, response)
+                                            message[
+                                                'message_text'] = f'Deleted from {message[USER][ACCOUNT_NAME]} contact list'
+                                            self.database.del_contact(message[USER][ACCOUNT_NAME], message['contact'],
+                                                                      datetime.datetime.now(),
+                                                                      message['message_text'])
+                                            # print('yep')
+                                        # else:
+                                        #     # pass
+                                        #     response = self.process_client_message(message, s_listener)
+                                        #     # send_message(s_listener, response)
+                                    except BrokenPipeError:
+                                        print('Вах')
+                                        send_data_lst.remove(s_listener)
+                                    except KeyError:
+                                        self.clients.remove(s_listener)
+                                        pass
+                                elif s_listener.getpeername() in self.clients_socket_names and \
+                                        message['action'] == 'message':
+                                    try:
+                                        response = self.process_client_message(message, s_listener)
                                         print(response)
-                                        self.database.contact(message[USER][ACCOUNT_NAME], message['to'],
-                                                              datetime.datetime.now(), message['message_text'])
-                                        # contacts = self.ClientContacts(user.id, contact_name, contact_time, message,
-                                        #                                sender.sender_count,
-                                        #                                recipient.recepient_count, is_friend)
-                                except BrokenPipeError:
-                                    print('Вах')
-                                    send_data_lst.remove(s_listener)
-                                except IndexError:
-                                    pass
+                                        if len(response['sock_address']) == 0 \
+                                                and s_listener.getpeername() == tuple(message['user']['sock']):
+                                            response['data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
+                                                               f'адресату {message["to"]}'
+                                            send_message(s_listener, response)
+                                        elif s_listener.getpeername() == tuple(response['sock_address']):
+                                            send_message(s_listener, response)
+
+                                            print(response)
+                                            self.database.contact(message[USER][ACCOUNT_NAME], message['to'],
+                                                                  datetime.datetime.now(), message['message_text'])
+                                            # contacts = self.ClientContacts(user.id, contact_name, contact_time, message,
+                                            #                                sender.sender_count,
+                                            #                                recipient.recepient_count, is_friend)
+                                    except BrokenPipeError:
+                                        print('Вах')
+                                        send_data_lst.remove(s_listener)
+                                    except IndexError:
+                                        pass
+                            except OSError:
+                                # send_data_lst.remove(s_listener)
+                                # self.clients.remove(s_listener)
+                                pass
+
 

@@ -112,7 +112,10 @@ class ClientTransport(threading.Thread, QObject):
                         my_ans[DATA] = binascii.b2a_base64(
                             digest).decode('ascii')
                         send_message(self.transport, my_ans)
-                        self.response_process(get_message(self.transport))
+                        ans = get_message(self.transport)
+                        if ans[RESPONSE] == 400:
+                            raise ServerError(ans[ERROR])
+                        # self.response_process(get_message(self.transport))
 
         except (OSError, json.JSONDecodeError) as err:
                 logger.debug(f'Connection error.', exc_info=err)
@@ -142,7 +145,7 @@ class ClientTransport(threading.Thread, QObject):
         }
         return data
 
-    def response_process(self,message):
+    def response_process(self, message):
             if 'response' in message:
                 # print(message['response'])
                 if message['response'] == 200 and message['data']:
@@ -181,26 +184,6 @@ class ClientTransport(threading.Thread, QObject):
         }
         logger.debug(f'Сформирован словарь сообщения: {message_dict}')
         return message_dict
-
-    # Функция обрабатывающяя сообщения от сервера. Ничего не возращает. Генерирует исключение при ошибке.
-    #     def process_server_ans(self, message):
-    #         logger.debug(f'Разбор сообщения от сервера: {message}')
-    #
-    #         # Если это подтверждение чего-либо
-    #         if RESPONSE in message:
-    #             if message[RESPONSE] == 200:
-    #                 return
-    #             elif message[RESPONSE] == 400:
-    #                 raise ServerError(f'{message[ERROR]}')
-    #             else:
-    #                 logger.debug(f'Принят неизвестный код подтверждения {message[RESPONSE]}')
-    #
-    #         # Если это сообщение от пользователя добавляем в базу, даём сигнал о новом сообщении
-    #         elif ACTION in message and message[ACTION] == MESSAGE and SENDER in message and DESTINATION in message \
-    #                 and MESSAGE_TEXT in message and message[DESTINATION] == self.username:
-    #             logger.debug(f'Получено сообщение от пользователя {message[SENDER]}:{message[MESSAGE_TEXT]}')
-    #             self.database_client.save_message(message[SENDER], 'in', message[MESSAGE_TEXT])
-    #             self.new_message.emit(message[SENDER])
 
     def create_exit_message(self):
         """Функция создаёт словарь с сообщением о выходе"""
@@ -333,7 +316,7 @@ class ClientTransport(threading.Thread, QObject):
                                                   f'адресату {message["to"]}':
                                 continue
                             else:
-                                self.database_client.save_message(message['login'],message["to"], message["data"])
+                                self.database_client.save_message(message['login'], message["to"], message["data"])
                                 self.new_message.emit(message['login'])
                         if message['response'] == 202:
                             print(f'\n {message}')
@@ -341,6 +324,8 @@ class ClientTransport(threading.Thread, QObject):
                             print(f'\n {message}')
                         if message['response'] == 210:
                             print(f'\n {message}')
+                        if message['response'] == 400:
+                            self.transport.close()
                         logger.info('Bad request 400')
                     logger.info('Ошибка чтения данных')
                 except OSError as err:
