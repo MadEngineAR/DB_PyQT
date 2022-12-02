@@ -1,10 +1,10 @@
 import sys
+
 sys.path.append('../')
 from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from logs.client_log_config import log
-
 
 # Инициализация клиентского логера
 logger = log
@@ -53,7 +53,7 @@ class AddContactDialog(QDialog):
         self.selector.clear()
         # множества всех контактов и контактов клиента
         contacts_list = self.database.contacts_list(self.transport.account_name)
-        users_cont= set(self.database.user_list_client())
+        users_cont = set(self.database.user_list_client())
         possible_contacts_set = users_cont.difference(contacts_list)
         # Удалим сами себя из списка пользователей, чтобы нельзя было добавить самого себя
         try:

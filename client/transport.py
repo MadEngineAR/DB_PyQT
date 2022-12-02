@@ -46,7 +46,7 @@ class ClientTransport(threading.Thread, QObject):
             if not check:
                 database_client.load_users_from_server(self.account_name)
             self.database_client.user_list_client()
-            self.database_client.contacts_list()
+            self.database_client.contacts_list(self.account_name)
         except OSError as err:
             if err.errno:
                 logger.critical(f'Потеряно соединение с сервером.')
