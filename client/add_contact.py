@@ -1,11 +1,10 @@
 import sys
-
-sys.path.append('../')
 from PyQt6.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from logs.client_log_config import log
 
+
+sys.path.append('../')
 # Инициализация клиентского логера
 logger = log
 
