@@ -13,20 +13,17 @@
 
 """
 import os
-from pprint import pprint
-import sqlalchemy
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Boolean, Text
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, DateTime, Text
 from sqlalchemy.orm import mapper, sessionmaker
 import datetime
-from server_DB import ServerStorage
+from server.server_DB import ServerStorage
 
 global client_name
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
 database_server = ServerStorage(
     os.path.join(
         dir_path,
-        'server_database'))
+        '../server_database'))
 
 
 class ClientStorage:
@@ -90,17 +87,17 @@ class ClientStorage:
         self.session = session()
 
     def contacts_clear(self):
-        '''Метод очищающий таблицу со списком контактов.'''
+        """Метод очищающий таблицу со списком контактов."""
         self.session.query(self.UsersContactsList).delete()
 
     def users_clear(self):
-        '''Метод очищающий таблицу со списком контактов.'''
+        """Метод очищающий таблицу со списком контактов."""
         self.session.query(self.AllUsersClient).delete()
 
     def update_users(self):
         self.load_users_from_server()
 
-    def update_contacts(self, username):
+    def update_contacts(self):
         self.load_contact_from_server()
 
     def user_list_client(self, username=None):
@@ -204,7 +201,7 @@ class ClientStorage:
     а клиент уже зарегистрирован, программа клиент ничего не знает о cвоих сообщениях.
     """
 
-    def load_history_server_DB(self):
+    def load_history_server_db(self):
         res = self.server_database.contacts_list(client_name)
         res_to = self.server_database.to_client_message(client_name)
         for item in res:
@@ -241,7 +238,7 @@ class ClientStorage:
 
                 return history
         else:
-            self.load_history_server_DB()
+            self.load_history_server_db()
 
     def init(self):
         # print(self.load_users_from_client())
@@ -249,7 +246,7 @@ class ClientStorage:
         if not self.load_users_from_client():
             self.load_users_from_server()
             self.load_contact_from_server()
-            self.load_history_server_DB()
+            self.load_history_server_db()
 
         # Функция проверяющяя наличие пользователя в известных
 

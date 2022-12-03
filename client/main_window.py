@@ -8,7 +8,7 @@ sys.path.append('../')
 from client.main_window_conv import Ui_MainClientWindow
 from client.add_contact import AddContactDialog
 from client.del_contact import DelContactDialog
-from errors import ServerError
+from common.errors import ServerError
 
 logger = logging.getLogger('client')
 
@@ -252,7 +252,7 @@ class ClientMainWindow(QMainWindow):
                     self.set_active_user()
 
     # Слот потери соединения
-    # Выдаёт сообщение об ошибке и завершает работу приложения
+    # выдаёт сообщение об ошибке и завершает работу приложения
     @pyqtSlot()
     def connection_lost(self):
         self.messages.warning(self, 'Сбой соединения', 'Потеряно соединение с сервером. ')

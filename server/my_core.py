@@ -7,10 +7,9 @@ import hmac
 import os
 import socket
 import threading
-from PyQt6.QtCore import QTimer, pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal, QObject
 from select import select
-
-from descriptor import NonNegative
+from common.descriptor import NonNegative
 from my_socket import MySocket
 from common.utils import get_message, send_message
 from logs.server_log_config import log
@@ -18,9 +17,6 @@ from common.variables import *
 
 logger = log
 users = []
-# Глобальная переменная, переходит в истину если используется socket.type SOCK_STREAM
-flag = False
-flag_sock_closed = False
 
 
 class Server(threading.Thread, QObject):
@@ -57,7 +53,6 @@ class Server(threading.Thread, QObject):
                 self.new_connection.emit()
                 users.append(message[USER])
                 # self.service_update_lists()
-                print(users)
                 return {
                     RESPONSE: 200,
                     'data': None,
@@ -136,10 +131,10 @@ class Server(threading.Thread, QObject):
         }
 
     def remove_client(self, client):
-        '''
+        """
         Метод обработчик клиента с которым прервана связь.
         Ищет клиента и удаляет его из списков и базы:
-        '''
+        """
         logger.info(f'Клиент {client.getpeername()} отключился от сервера.')
         for user in users:
             if user['account_name'] == client:
@@ -149,7 +144,7 @@ class Server(threading.Thread, QObject):
         client.close()
 
     def autorize_user(self, message, sock):
-        '''Метод реализующий авторизцию пользователей.'''
+        """Метод реализующий авторизцию пользователей."""
         # Если имя пользователя уже занято то возвращаем 400
         logger.debug(f'Start auth process for {message[USER]}')
 
@@ -175,15 +170,13 @@ class Server(threading.Thread, QObject):
             message_auth[DATA] = random_str.decode('ascii')
             # Создаём хэш пароля и связки с рандомной строкой, сохраняем
             # серверную версию ключа
-            hash = hmac.new(self.database.get_hash(message[USER][ACCOUNT_NAME]), random_str, 'MD5')
-            digest = hash.digest()
+            hash_ = hmac.new(self.database.get_hash(message[USER][ACCOUNT_NAME]), random_str, 'MD5')
+            digest = hash_.digest()
             logger.debug(f'Auth message = {message_auth}')
             try:
                 # Обмен с клиентом
                 send_message(sock, message_auth)
                 ans = get_message(sock)
-                global flag_sock_closed
-                flag_sock_closed = True
             except OSError as err:
                 logger.debug('Error in auth, data:', exc_info=err)
                 sock.close()
@@ -210,7 +203,7 @@ class Server(threading.Thread, QObject):
                 return RESPONSE_400
 
     def service_update_lists(self):
-        '''Метод реализующий отправки сервисного сообщения 205 клиентам.'''
+        """Метод реализующий отправки сервисного сообщения 205 клиентам"""
         for client in self.clients:
             try:
                 send_message(client, RESPONSE_215)
@@ -299,7 +292,8 @@ class Server(threading.Thread, QObject):
                                             # print(response)
                                             send_message(s_listener, response)
                                             message[
-                                                'message_text'] = f'Deleted from {message[USER][ACCOUNT_NAME]} contact list'
+                                                'message_text'] = f'Deleted from {message[USER][ACCOUNT_NAME]}' \
+                                                                  f' contact list'
                                             self.database.del_contact(message[USER][ACCOUNT_NAME], message['contact'],
                                                                       datetime.datetime.now(),
                                                                       message['message_text'])
@@ -317,7 +311,7 @@ class Server(threading.Thread, QObject):
                                         if len(response['sock_address']) == 0 \
                                                 and s_listener.getpeername() == tuple(message['user']['sock']):
                                             response[
-                                                'data'] = f'Вы отправили сообщение не существующему либо отключенному ' \
+                                                'data'] = f'Вы отправили сообщение не существующему либо отключенному '\
                                                           f'адресату {message["to"]}'
                                             send_message(s_listener, response)
                                         elif s_listener.getpeername() == tuple(response['sock_address']):
@@ -326,9 +320,6 @@ class Server(threading.Thread, QObject):
                                             print(response)
                                             self.database.contact(message[USER][ACCOUNT_NAME], message['to'],
                                                                   datetime.datetime.now(), message['message_text'])
-                                            # contacts = self.ClientContacts(user.id, contact_name, contact_time, message,
-                                            #                                sender.sender_count,
-                                            #                                recipient.recepient_count, is_friend)
                                     except BrokenPipeError:
                                         print('Вах')
                                         send_data_lst.remove(s_listener)

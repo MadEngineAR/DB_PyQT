@@ -1,12 +1,11 @@
 import configparser
 import threading
-from PyQt6.QtWidgets import QMainWindow, QApplication, QLabel, QTableView, QMessageBox
-from PyQt6.QtGui import QStandardItemModel, QStandardItem, QAction
+from PyQt6.QtWidgets import QMainWindow, QLabel, QTableView, QMessageBox
+from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QTimer
-from server.stat_window import StatWindow
 from server.config_window import ConfigWindow
 from server.add_user import RegisterUser
-from server_qui import gui_create_model, HistoryWindow, create_stat_model
+from server.server_qui import gui_create_model, HistoryWindow, create_stat_model
 
 conflag_lock = threading.Lock()
 config = configparser.ConfigParser()

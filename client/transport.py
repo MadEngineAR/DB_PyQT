@@ -6,7 +6,7 @@ import time
 import threading
 from PyQt6.QtCore import pyqtSignal, QObject
 from common.utils import *
-from errors import ServerError, IncorrectDataRecivedError
+from common.errors import ServerError
 from logs.client_log_config import log
 from common.variables import *
 

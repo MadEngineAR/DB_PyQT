@@ -3,13 +3,12 @@ import sys
 import configparser
 from PyQt6.QtWidgets import QApplication
 from server.main_window import MainWindowServer
-from server_DB import ServerStorage
+from server.server_DB import ServerStorage
 from server.my_core import Server
 from common.variables import DEFAULT_PORT
 from logs.server_log_config import log
 
 logger = log
-
 
 
 def main():

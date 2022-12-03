@@ -1,9 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 from client.window_dialog import WindowDialog
-from client_DB import ClientStorage
+from client.client_DB import ClientStorage
 from common.variables import *
-from errors import ServerError
+from common.errors import ServerError
 from client.transport import ClientTransport
 from client.main_window import ClientMainWindow
 from logs.client_log_config import log

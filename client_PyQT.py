@@ -1,9 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 from client.window_dialog import WindowDialog
-from client_DB import ClientStorage
+from client.client_DB import ClientStorage
 from common.variables import *
-from errors import ServerError
+from common.errors import ServerError
 from client.transport import ClientTransport
 from client.main_window import ClientMainWindow
 from logs.client_log_config import log
@@ -30,25 +30,21 @@ if __name__ == '__main__':
         print('Номер порт должен находиться в диапазоне  [1024 - 65535]')
         sys.exit(1)
 
-    # Создаём клиентcкое приложение
+    # Создаём клиентское приложение
     client_app = QApplication(sys.argv)
 
     # Если имя пользователя не было указано в командной строке, то запросим его
     if not client_name:
-        # client_name = input('Input username:  ')
         app = QApplication(sys.argv)
-
         window = WindowDialog()
         window.show()
-
         app.exec()
         if window.ok_pressed:
             client_name = window.client_name.text()
             client_passwd = window.client_passwd.text()
-
     # Записываем логи
     logger.info(
-        f'Запущен клиент с парамертами: адрес сервера: {server_address} , порт: {server_port},'
+        f'Запущен клиент с параметрами: адрес сервера: {server_address} , порт: {server_port},'
         f'имя пользователя: {client_name}')
 
     # Создаём объект базы данных
