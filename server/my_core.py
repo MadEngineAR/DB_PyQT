@@ -214,7 +214,7 @@ class Server(threading.Thread, QObject):
         """
         Загрузка параметров командной строки, если нет параметров, то задаём значения по умолчанию.
         Сначала обрабатываем порт:
-        server.py -p 8888 -a 127.0.0.1
+        server_PyQT.py -p 8888 -a 127.0.0.1
         """
         logger.info(f'PORT : {self.port} ,IP_ADDRESS {self.addr}')
         s = MySocket(socket.AF_INET, socket.SOCK_STREAM)

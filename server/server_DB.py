@@ -12,8 +12,6 @@
     id_клиента.
 
 """
-from pprint import pprint
-import sqlalchemy
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import mapper, sessionmaker
 import datetime
@@ -118,10 +116,10 @@ class ServerStorage:
         self.session.commit()
 
     def add_user(self, name, passwd_hash):
-        '''
+        """
         Метод регистрации пользователя.
         Принимает имя и хэш пароля, создаёт запись в таблице статистики.
-        '''
+        """
         sender_count = 0
         recepient_count = 0
         user = self.AllUsers(name, passwd_hash, None, None, sender_count, recepient_count)
@@ -132,17 +130,15 @@ class ServerStorage:
         self.session.add(history)
         self.session.commit()
 
-
     def check_user(self, name):
-        '''Метод проверяющий существование пользователя.'''
+        """Метод проверяющий существование пользователя."""
         if self.session.query(self.AllUsers).filter_by(username=name).count():
             return True
         else:
             return False
 
-
     def get_hash(self, name):
-        '''Метод получения хэша пароля пользователя.'''
+        """Метод получения хэша пароля пользователя."""
         user = self.session.query(self.AllUsers).filter_by(username=name).first()
         return user.passwd_hash
 
@@ -172,7 +168,7 @@ class ServerStorage:
 
         self.session.commit()
 
-    def del_contact(self, username, del_contact_name, contact_time, message):
+    def del_contact(self, username, del_contact_name):
         try:
             sender = self.session.query(self.AllUsers).filter_by(username=username).first()
             recipient = self.session.query(self.AllUsers).filter_by(username=del_contact_name).first()
@@ -201,8 +197,6 @@ class ServerStorage:
         )
         if username:
             query = query.filter(self.AllUsers.username == username)
-        return query.all()
-        #  print(query)
         return query.all()
 
     def users_gui(self):
@@ -245,7 +239,7 @@ class ServerStorage:
         ).join(self.AllUsers)
         if username:
             query = query.filter(self.AllUsers.username == username)
-        query_is_friend = query.filter(self.ClientContacts.is_friend == True)
+        query_is_friend = query.filter(True == self.ClientContacts.is_friend)
         return query_is_friend.all()
 
     def to_client_message(self, username):
@@ -259,7 +253,6 @@ class ServerStorage:
         if username:
             query = query.filter(self.ClientContacts.contact_name == username)
         return query.all()
-
 
 
 if __name__ == '__main__':

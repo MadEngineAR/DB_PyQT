@@ -38,7 +38,7 @@ class TestServer(TestCase):
         Используем функцию assertEqual и unittest.mock.patch
         порта
         """
-        with patch.object(sys, 'argv', ['server.py', '-p', 8888]):
+        with patch.object(sys, 'argv', ['server_PyQT.py', '-p', 8888]):
             if '-p' in sys.argv:
                 listen_port = int(sys.argv[sys.argv.index('-p') + 1])
                 if DEFAULT_PORT != listen_port:

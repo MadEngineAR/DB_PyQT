@@ -13,7 +13,7 @@ while True:
         break
     elif ACTION == 's':
         try:
-            PROCESS.append(subprocess.Popen('python server.py', stdin=subprocess.PIPE,stdout=subprocess.PIPE,
+            PROCESS.append(subprocess.Popen('python server_PyQT.py', stdin=subprocess.PIPE,stdout=subprocess.PIPE,
                                         creationflags=subprocess.CREATE_NEW_CONSOLE))
         except Exception as e:
             print(e)

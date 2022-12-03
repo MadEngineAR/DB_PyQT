@@ -3,15 +3,13 @@ from PyQt6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor
 from PyQt6.QtCore import pyqtSlot, Qt
 import sys
 import logging
-
-sys.path.append('../')
 from client.main_window_conv import Ui_MainClientWindow
 from client.add_contact import AddContactDialog
 from client.del_contact import DelContactDialog
 from common.errors import ServerError
 
 logger = logging.getLogger('client')
-
+sys.path.append('../')
 
 # Класс основного окна
 class ClientMainWindow(QMainWindow):
@@ -70,10 +68,6 @@ class ClientMainWindow(QMainWindow):
     # Заполняем историю сообщений.
     def history_list_update(self):
         # Получаем историю, отсортированную по дате
-        # contact = self.current_chat
-        # res_1 = self.database_client.get_history(self.client_name,self.current_chat)
-        # res = sorted(self.database_client.get_history(self.client_name,self.current_chat))
-        # print(res)
         try:
             hist_list = sorted(self.database_client.get_history(self.client_name, self.current_chat),
                                key=lambda item: item[3])
@@ -243,13 +237,16 @@ class ClientMainWindow(QMainWindow):
                 print('NO')
                 # Раз нет, спрашиваем хотим ли добавить юзера в контакты.
                 if self.messages.question(self, 'Новое сообщение',
-                                          f'Получено новое сообщение от {sender}.\n Данного пользователя нет в вашем контакт-листе.\n Добавить в контакты и открыть чат с ним?',
+                                          f'Получено новое сообщение от {sender}.'
+                                          f'\n Данного пользователя нет в вашем контакт-листе.'
+                                          f'\n Добавить в контакты и открыть чат с ним?',
                                           QMessageBox.StandardButton.Yes,
                                           QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
                     self.add_contact(sender)
                     self.current_chat = sender
-                    self.database_client.get_history()
                     self.set_active_user()
+                    self.database_client.get_history()
+
 
     # Слот потери соединения
     # выдаёт сообщение об ошибке и завершает работу приложения

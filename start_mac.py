@@ -17,7 +17,7 @@ CHOICE_TEXT = """
 CLIENTS = []
 SERVER = ''
 PATH_TO_FILE = os.path.dirname(__file__)
-PATH_TO_SCRIPT_SERVER = os.path.join(PATH_TO_FILE, "server.py")
+PATH_TO_SCRIPT_SERVER = os.path.join(PATH_TO_FILE, "server_PyQT.py")
 PATH_TO_SCRIPT_CLIENTS = os.path.join(PATH_TO_FILE, "client_PyQT.py")
 
 while True:
