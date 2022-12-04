@@ -24,8 +24,8 @@ class Log:
                 logger.info(f'Функция {func.__name__} вызвана из функции {function_call}')
                 logger.debug(f'client: {func.__name__}({args}, {kwargs})')
                 # print(f'client: {func.__name__}({args}, {kwargs}) = {res}')
-            elif script == 'server.py':
-                print(function_call)
+            elif script == 'server_PyQT.py':
+                # print(function_call)
                 logger = logging.getLogger('server')
                 logger.debug(f'server: {func.__name__}({args}, {kwargs})')
                 logger.info(f'Функция {func.__name__} вызвана из функции {function_call}')

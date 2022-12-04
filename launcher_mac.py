@@ -1,12 +1,8 @@
 import os
-
-import signal
 import stat
 import subprocess
 import sys
 import time
-from time import sleep
-
 
 PYTHON_PATH = sys.executable
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -14,8 +10,8 @@ CLIENTS_COUNT = 2
 
 
 def get_subprocess(file_name, args=''):
-    #Задержка для того, что бы отправляющий процесс успел зарегистрироваться на сервере, и потом в словаре имен клиентов
-    #остался только слушающий клиент
+    # Задержка для  того, что бы отправляющий процесс успел зарегистрироваться на сервере, и потом в словаре имен клиентов
+    # остался только слушающий клиент
     time.sleep(0.5)
     # file_full_path = f"{PYTHON_PATH} {BASE_PATH}/{file_with_args}"
     file_full_path = f"{BASE_PATH}/{file_name}"
@@ -27,24 +23,41 @@ def get_subprocess(file_name, args=''):
     return subprocess.Popen(['/usr/bin/open', '-n', '-a', 'Terminal', 'start_node.command'], shell=False)
 
 
-P_LIST = []
-while True:
-    TEXT_FOR_INPUT = f"Запустить cервер и {CLIENTS_COUNT} клиентов (s) / Закрыть клиентов (x) / Выйти (q):\n "
-    USER = input(TEXT_FOR_INPUT)
+if __name__ == '__main__':
 
-    if USER == "q":
-        break
-    elif USER == "s":
-        P_LIST.append(get_subprocess("server.py"))
-        time.sleep(0.5)
-        for i in range(CLIENTS_COUNT):
-            P_LIST.append(get_subprocess("client.py"))
-            time.sleep(1)
+    P_LIST = []
+    PIDS = []
+    while True:
+        TEXT_FOR_INPUT = f"Запустить cервер и {CLIENTS_COUNT} клиентов (s) / Закрыть клиентов (x) / Выйти (q):\n "
+        USER = input(TEXT_FOR_INPUT)
 
+        if USER == "q":
+            break
+        elif USER == "s":
+            server_proc = get_subprocess("server_PyQT.py")
+            P_LIST.append(server_proc)
+            PIDS.append(server_proc.pid)
+            print(f'Server pid: {server_proc.pid}')
+            time.sleep(0.5)
+            for i in range(CLIENTS_COUNT):
+                client_proc = get_subprocess("client.py")
+                P_LIST.append(client_proc)
+                PIDS.append(client_proc.pid)
+                print(f'Client pid: {client_proc.pid}')
+                time.sleep(1)
 
-        print(f'Число запущенных пар клиентских скриптов: {CLIENTS_COUNT}')
+            print(f'Число запущенных пар клиентских скриптов: {CLIENTS_COUNT}')
 
-    elif USER == "x":
-        while P_LIST:
-            victim = P_LIST.pop()
-            os.killpg(victim.pid, signal.SIGINT)
+        elif USER == "x":
+            while P_LIST:
+                victim = P_LIST.pop()
+                # os.getpgid(victim.pid)
+                # print(os.getpgid(victim.pid))
+                # print(victim.pid)
+                # victim.kill()
+                # victim.terminate()
+                print(victim)
+                print('yep')
+                victim.kill()
+                # os.kill(victim.pid, signal.SIGTERM)
+                # os.killpg(victim.pid, signal.SIGINT)
