@@ -23,7 +23,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 database_server = ServerStorage(
     os.path.join(
         dir_path,
-        '../server_database'))
+        '../server/server_database'))
 
 
 class ClientStorage:
@@ -52,7 +52,7 @@ class ClientStorage:
             self.contact_name = contact_name
 
     def __init__(self, name):
-        self.database_engine = create_engine(f'sqlite:///client/client_{name}.db', echo=False, pool_recycle=7200,
+        self.database_engine = create_engine(f'sqlite:///client_{name}.db', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
         global client_name
         client_name = name

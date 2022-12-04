@@ -21,7 +21,7 @@ def main():
     database = ServerStorage(
         os.path.join(
             dir_path,
-            'server_database'))
+            'server/server_database'))
 
     try:
         if '-p' in sys.argv:

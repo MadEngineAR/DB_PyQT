@@ -10,7 +10,7 @@ import threading
 from PyQt6.QtCore import pyqtSignal, QObject
 from select import select
 from common.descriptor import NonNegative
-from my_socket import MySocket
+from server.my_socket import MySocket
 from common.utils import get_message, send_message
 from logs.server_log_config import log
 from common.variables import *
